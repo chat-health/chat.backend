@@ -2,7 +2,23 @@
   "name": "chat.backend",
   "description": "REST API for CHAT Android app",
   "version": "0.1.1",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chat-health/chat.backend.git"
+  },
   "dependencies": {
     "express": "3.x"
-  }
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib": "~0.4.0",
+    "grunt-jsonlint": "~1.0.0",
+    "grunt-contrib-jshint": "0.5.1"
+  },
+  "author": "Armin Krauss",
+  "license": "GPL v3"
 }
