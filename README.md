@@ -3,6 +3,14 @@ chat-backend
 
  Code for CHAT's REST interface and storage backend
 
+# Installation
+
+Your systems needs a working node.js installation (node and npm) and later on a database (this is not settled yet).
+
+To install the dependencies please run (the package.json will tell npm what to do)
+
+> npm install
+
 
 ### Copyright (C) 2013  [Armin Krauss](https://github.com/mackrauss "mackrauss' github profile") and [Colin McCann](https://github.com/colinmccann "Colin's github profile")
 
