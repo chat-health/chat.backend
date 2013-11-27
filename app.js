@@ -10,6 +10,11 @@ var clients = [
   {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 322, gender: "male"}
 ];
 
+var households = [
+  { _id : 1, hh_name : "John Doe", community : "snathing", worker_id : 1000 },
+  { _id : 2, hh_name : "Jason Dobosch", community : "snathing", worker_id : 1001 }
+];
+
 var workers = [
   { _id : 1, first_name : "colin", last_name : "mccann", password : "chat", role_name : "councelor", assigned_community : "snathing" },
   { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
@@ -34,7 +39,24 @@ app.get('/client/:id', function(req, res) {
     res.json(client);
   } else {
     res.statusCode = 404;
-    return res.send('Error 404: No client record found found');
+    return res.send('Error 404: No client record found');
+  }
+});
+
+app.get('/households', function(req, res) {
+  res.json(households);
+});
+
+app.get('/household/:id', function(req, res) {
+  var household = _.find(households, function (h) {
+    return h._id === parseInt(req.params.id, 10);
+  });
+
+  if (household) {
+    res.json(household);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No household record found');
   }
 });
 
@@ -51,7 +73,7 @@ app.get('/worker/:id', function(req, res) {
     res.json(worker);
   } else {
     res.statusCode = 404;
-    return res.send('Error 404: No worker record found found');
+    return res.send('Error 404: No worker record found');
   }
   // if(workers.length <= req.params.id || req.params.id < 0) {
   //   res.statusCode = 404;
