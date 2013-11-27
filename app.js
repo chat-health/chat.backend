@@ -3,6 +3,13 @@ var app = express();
 var _ = require('lodash');
 app.use(express.bodyParser()); // this is needed to parse the body of requests like POST and PUT
 
+// int id, String first_name, String last_name, int hh_id, String gender
+var clients = [
+  {_id: 1, first_name: "John", last_name: "Doe", hh_id: 322, gender: "male"},
+  {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 322, gender: "female"},
+  {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 322, gender: "male"}
+];
+
 var workers = [
   { _id : 1, first_name : "colin", last_name : "mccann", password : "chat", role_name : "councelor", assigned_community : "snathing" },
   { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
@@ -12,6 +19,23 @@ var workers = [
 app.get('/', function(req, res) {
   res.type('text/plain');
   res.send('This will be the API used by the CHAT Android app for data syncing.\n Add /workers to retrieve all worker records. More to come');
+});
+
+app.get('/clients', function(req, res) {
+  res.json(clients);
+});
+
+app.get('/client/:id', function(req, res) {
+  var client = _.find(clients, function (c) {
+    return c._id === parseInt(req.params.id, 10);
+  });
+
+  if (client) {
+    res.json(client);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No client record found found');
+  }
 });
 
 app.get('/workers', function(req, res) {
