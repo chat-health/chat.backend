@@ -20,6 +20,8 @@ var workers = [
   { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
 ];
 
+var visits = [];
+
 
 app.get('/', function(req, res) {
   res.type('text/plain');
@@ -82,6 +84,68 @@ app.get('/worker/:id', function(req, res) {
 
   // var q = workers[req.params.id];
   // res.json(q);
+});
+
+app.get('/visits', function(req, res) {
+  res.json(visits);
+});
+
+// app.get('/visits/:id', function(req, res){
+//   var visit = _.find(visits, function (v) {
+//     return v._id === parseInt(req.params.id, 10);
+//   });
+
+//   if (visit) {
+//     res.json(visit);
+//   } else {
+//     res.statusCode = 404;
+//     return res.send('Error 404: No visit record found');
+//   }
+// });
+
+app.post('/visits', function(req, res) {
+  // console.log(req);
+  // if(!req.body.hasOwnProperty('worker_id') || 
+  //    !req.body.hasOwnProperty('hh_id')) {
+  //   res.statusCode = 400;
+  //   return res.send('Error 400: Post syntax incorrect.');
+  // }
+
+  var reqKeys = _.keys(req.body);
+  var newVisit = {};
+
+  _.each(reqKeys, function(k) {
+    newVisit[k] = req.body[k];
+  });
+
+  visits.push(newVisit);
+  console.log(visits);
+
+  res.json(true);
+
+  // var newVisit = {
+  //   hh_id: req.body.hh_id,
+  //   date: req.body.date,
+  //   worker_id: 123 (should be an int, right?),
+  //   lon: 43.343543,
+  //   lat: 79.94949,
+  //   start_time: {$date: "2013-11-28 14:00:00"},
+  //   start_time: {$date: "2013-11-28 14:00:00"},
+  //   resource_accessed: true,
+  //   service_accessed: false,
+  //   video_accessed: true,
+  //   type: "What is the type of a visit?",
+  //   resources_accessed: [1, 8, 9],
+  //   services_accessed: [],
+  //   video_accessed: [1, 5, 39]
+
+  //   author : req.body.author,
+  //   text : req.body.text
+  // };
+  // // console.log(newQuote);
+  // quotes.push(newQuote);
+  // // console.log(quotes);
+  // res.json(true);
 });
 
 // app.post('/quote', function(req, res) {
