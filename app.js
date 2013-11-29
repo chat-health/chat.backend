@@ -5,14 +5,14 @@ app.use(express.bodyParser()); // this is needed to parse the body of requests l
 
 // int id, String first_name, String last_name, int hh_id, String gender
 var clients = [
-  {_id: 1, first_name: "John", last_name: "Doe", hh_id: 322, gender: "male"},
-  {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 322, gender: "female"},
-  {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 322, gender: "male"}
+  {_id: 1, first_name: "John", last_name: "Doe", hh_id: 1, gender: "male"},
+  {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 1, gender: "female"},
+  {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 1, gender: "male"}
 ];
 
 var households = [
-  { _id : 1, hh_name : "John Doe", community : "snathing", worker_id : 1000 },
-  { _id : 2, hh_name : "Jason Dobosch", community : "snathing", worker_id : 1001 }
+  { _id : 1, hh_name : "John Doe", community : "snathing", worker_id : 1 },
+  { _id : 2, hh_name : "Jason Dobosch", community : "snathing", worker_id : 1 }
 ];
 
 var workers = [
