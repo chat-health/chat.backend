@@ -20,6 +20,46 @@ var workers = [
   { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
 ];
 
+var services = [
+  { _id : 1, name : "B1 Household (Re)Assessment - Checklist (Staff Only)", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 2, name : "B2 Emergency Food parcel/voucher provision", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 3, name : "B3 Household Equipment provision", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 4, name : "B4 Clothing distribution", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 5, name : "B5 Blanket / Bedding Distribution", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 6, name : "B6 Household Maintenance", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 7, name : "B7 Monitoring - Grant Usage", type : "Material Well Being", role : "Home Care Volunteer" },
+  { _id : 8, name : "C1 Advise/Assistance in applying for a School Fee Exemption", type : "Cognitive Well Being", role : "Home Care Volunteer" },
+  { _id : 9, name : "C2 School Uniform Provision", type : "Cognitive Well Being", role : "Home Care Volunteer" },
+  { _id : 10, name : "C3 School Stationary Provision", type : "Cognitive Well Being", role : "Home Care Volunteer" },
+  { _id : 11, name : "C4 Monitoring - School Attendance & Performance (School Visits Only)", type : "Cognitive Well Being", role : "Home Care Volunteer" },
+  { _id : 12, name : "D1 Caregiver / Family Consultation on Memory Work (A=Accepted or D=Declined)", type : "Emotional Well Being", role : "Home Care Volunteer" },
+  { _id : 13, name : "D2 Memory Box Workshop Completed by Caregiver", type : "Emotional Well Being", role : "Home Care Volunteer" },
+  { _id : 14, name : "D3 Memory Box Process Started", type : "Emotional Well Being", role : "Home Care Volunteer" },
+  { _id : 15, name : "D4 Memory Box Process Completed", type : "Emotional Well Being", role : "Home Care Volunteer" },
+  { _id : 16, name : "D5 Monitoring - Emotional Well-being", type : "Emotional Well Being", role : "Home Care Volunteer" },
+  { _id : 17, name : "D6 Referral to TCF Welfare Services", type : "Emotional Well Being", role : "Home Care Volunteer" },
+  { _id : 19, name : "E1 Monitoring – General Health & Nutrition", type : "Physical Well Being", role : "Home Care Volunteer" },
+  { _id : 20, name : "E2 Accompanied Clinic Visit", type : "Physical Well Being", role : "Home Care Volunteer" },
+  { _id : 21, name : "E3 Referral – Local Health facility", type : "Physical Well Being", role : "Home Care Volunteer" },
+  { _id : 22, name : "E4 Referral – TCF Health Services", type : "Physical Well Being", role : "Home Care Volunteer" },
+  { _id : 23, name : "S2 Advise/Assistance in applying for a Identity Document", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 24, name : "S2 Advise/Assistance in applying for a Birth Certificate", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 25, name : "S3 Advise/Assistance in applying for a Full Birth Certificate", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 26, name : "S4 Advise/Assistance in applying for a Sexual Offences Clearance Certificate", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 27, name : "S5 Advise/Assistance in applying for a Pension", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 28, name : "S6 Advise/Assistance in applying for a Care Dependency Grant", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 29, name : "S7 Advise/Assistance in applying for a Child Support Grant", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 30, name : "S8 Advise/Assistance in applying for a Disability Grant", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 31, name : "T3 Documents Received - Identity Document", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 32, name : "T3 Documents Received - Birth Certificate", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 33, name : "T3 Documents Received - Full Birth Certificate", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 34, name : "T4 Documents Received - Sexual Offences Clearance Certificate", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 35, name : "T5 Other Grants received - Pension", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 36, name : "T6 Other Grants received - Care Dependency", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 37, name : "T7 Other Grants received - Child Support Grants", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 38, name : "T8 Other Grants received - Disability Grant", type : "Documents, Grants and Status", role : "Home Care Volunteer" }
+];
+
 var visits = [];
 
 
@@ -84,6 +124,23 @@ app.get('/worker/:id', function(req, res) {
 
   // var q = workers[req.params.id];
   // res.json(q);
+});
+
+app.get('/services', function(req, res) {
+  res.json(services);
+});
+
+app.get('/service/:id', function(req, res) {
+  var service = _.find(services, function (h) {
+    return h._id === parseInt(req.params.id, 10);
+  });
+
+  if (service) {
+    res.json(service);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No service record found');
+  }
 });
 
 app.get('/visits', function(req, res) {
