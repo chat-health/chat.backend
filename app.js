@@ -168,15 +168,19 @@ app.post('/visits', function(req, res) {
   //   return res.send('Error 400: Post syntax incorrect.');
   // }
 
-  var reqKeys = _.keys(req.body);
-  var newVisit = {};
+  _.each(req.body, function (v) {
+    var reqKeys = _.keys(v);
+    var newVisit = {};
 
-  _.each(reqKeys, function(k) {
-    newVisit[k] = req.body[k];
+    _.each(reqKeys, function(k) {
+      newVisit[k] = v[k];
+    });
+
+    visits.push(newVisit);
+    console.log(visits);  
   });
 
-  visits.push(newVisit);
-  console.log(visits);
+  
 
   res.json(true);
 
