@@ -32,7 +32,6 @@ var services = [
   { _id : 9, name : "C2 School Uniform Provision", type : "Cognitive Well Being", role : "Home Care Volunteer" },
   { _id : 10, name : "C3 School Stationary Provision", type : "Cognitive Well Being", role : "Home Care Volunteer" },
   { _id : 11, name : "C4 Monitoring - School Attendance & Performance (School Visits Only)", type : "Cognitive Well Being", role : "Home Care Volunteer" },
-  { _id : 12, name : "D1 Caregiver / Family Consultation on Memory Work (A=Accepted or D=Declined)", type : "Emotional Well Being", role : "Home Care Volunteer" },
   { _id : 13, name : "D2 Memory Box Workshop Completed by Caregiver", type : "Emotional Well Being", role : "Home Care Volunteer" },
   { _id : 14, name : "D3 Memory Box Process Started", type : "Emotional Well Being", role : "Home Care Volunteer" },
   { _id : 15, name : "D4 Memory Box Process Completed", type : "Emotional Well Being", role : "Home Care Volunteer" },
@@ -58,6 +57,8 @@ var services = [
   { _id : 36, name : "T6 Other Grants Received - Care Dependency", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
   { _id : 37, name : "T7 Other Grants Received - Child Support Grants", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
   { _id : 38, name : "T8 Other Grants Received - Disability Grant", type : "Documents, Grants and Status", role : "Home Care Volunteer" },
+  { _id : 100, name : "D1 Caregiver / Family Consultation on Memory Work", type : "Other", role : "Home Care Volunteer" },
+  { _id : 101, name : "O1 - Other", type : "Other", role : "Home Care Volunteer" },
   { _id : 39, name : "HA1- Child Immunization Card", type : "Symptoms", role : "Lay Counsellor" },
   { _id : 40, name : "HA2- Clinic Card", type : "Symptoms", role : "Lay Counsellor" },
   { _id : 41, name : "HB1- Ear Discharge / Aches", type : "Symptoms", role : "Lay Counsellor" },
@@ -98,7 +99,7 @@ var services = [
   { _id : 76, name : "HE10- Pre-Test Counselling Completed (Couple)", type : "Testing and Education", role : "Lay Counsellor" },
   { _id : 77, name : "HE11- Testing Completed", type : "Testing and Education", role : "Lay Counsellor" },
   { _id : 78, name : "HE12- Test Results (+/- or Discordant)", type : "Testing and Education", role : "Lay Counsellor" },
-  { _id : 79, name : "HE17- Post-Test Counselling Completed", type : "Testing and Education", role : "Lay Counsellor" },
+  { _id : 79, name : "HE13- Post-Test Counselling Completed", type : "Testing and Education", role : "Lay Counsellor" },
   { _id : 80, name : "HE14- Referral for Elisa", type : "Referrals", role : "Lay Counsellor" },
   { _id : 81, name : "HE15- Referral For CD 4 Count (If referred for CD4 count ASK *)", type : "Referrals", role : "Lay Counsellor" },
   { _id : 82, name : "HE16- Referral For PCR (Children)", type : "Referrals", role : "Lay Counsellor" },
@@ -111,7 +112,17 @@ var services = [
   { _id : 89, name : "HE28- Referral to TCF Health Staff", type : "Referrals", role : "Lay Counsellor" },
   { _id : 90, name : "HE24- Started on prophylaxis", type : "Treatment and Monitoring", role : "Lay Counsellor" },
   { _id : 91, name : "HE25- Started on ARV’s", type : "Treatment and Monitoring", role : "Lay Counsellor" },
-  { _id : 92, name : "HE26- Treatment Compliance Monitoring", type : "Treatment and Monitoring", role : "Lay Counsellor" }
+  { _id : 92, name : "HE26- Treatment Compliance Monitoring", type : "Treatment and Monitoring", role : "Lay Counsellor" },
+  { _id : 102, name : "HB14 - Other symptoms", type : "Other", role : "Lay Counsellor" },
+  { _id : 103, name : "HC1B – Previously tested for HIV", type : "Other", role : "Lay Counsellor" },
+  { _id : 104, name : "HC1C - If previously tested, WHEN?", type : "Other", role : "Lay Counsellor" },
+  { _id : 105, name : "HC1D - If previously tested, RESULTS?", type : "Other", role : "Lay Counsellor" },
+  { _id : 106, name : "HC13 - Other illness or treatment", type : "Other", role : "Lay Counsellor" },
+  { _id : 107, name : "HD1 - Rate the overall health of the individual", type : "Other", role : "Lay Counsellor" },
+  { _id : 108, name : "HE8 - HIV Counselling & Testing Offered and Declined: Ask reason for delining", type : "Other", role : "Lay Counsellor" },
+  { _id : 109, name : "HE12 - Test Results", type : "Other", role : "Lay Counsellor" },
+  { _id : 110, name : "HE15 - Referral For CD 4 Count: Ask if they would have preferred to have their CD4 count tested at home", type : "Other", role : "Lay Counsellor" },
+  { _id : 111, name : "HE27 - Other", type : "Other", role : "Lay Counsellor" }
 ];
 
 var visits = [];
