@@ -2,9 +2,10 @@ var express = require('express');
 var app = express();
 var _ = require('lodash');
 app.use(express.bodyParser()); // this is needed to parse the body of requests like POST and PUT
-fs = require('fs');
+var fs = require('fs');
 
-// int id, String first_name, String last_name, int hh_id, String gender
+
+// Objects pulled to tablet
 var clients = [
   {_id: 1, first_name: "John", last_name: "Doe", hh_id: 1, gender: "male"},
   {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 1, gender: "female"},
@@ -21,18 +22,10 @@ var workers = [
   { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
 ];
 
+var services = [];
 
-var services;
-fs.readFile ('./test_data/services.json', 'utf8', function (err,data) {
-  if (err) {
-    return console.log(err);
-  }
-  console.log('Success reading test_data/services.json');
-  services = JSON.parse(data);
-});
-
+// Objects pushed from tablet
 var visits = [];
-
 var attendance = [];
 
 
@@ -115,6 +108,26 @@ app.get('/service/:id', function(req, res) {
     return res.send('Error 404: No service record found');
   }
 });
+
+
+app.post('/services', function(req, res) {
+
+  _.each(req.body, function (v) {
+    var reqKeys = _.keys(v);
+    var newObject = {};
+
+    _.each(reqKeys, function(k) {
+      newObject[k] = v[k];
+    });
+
+    services.push(newObject);
+    console.log(services);  
+  });
+
+  res.json(true);
+});
+
+
 
 app.get('/visits', function(req, res) {
   res.json(visits);
