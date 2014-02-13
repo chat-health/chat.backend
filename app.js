@@ -16,7 +16,7 @@ var households = [
 ];
 
 var workers = [
-  { _id : 1, first_name : "colin", last_name : "mccann", password : "chat", role_name : "councelor", assigned_community : "snathing" },
+  { _id : 1, first_name : "colin", last_name : "mccann", password : "chat", role_name : "councellor", assigned_community : "snathing" },
   { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
 ];
 
@@ -28,6 +28,8 @@ var services = [
   { _id : 5, name : "B5 Blanket / Bedding Distribution", type : "Material Well Being", role : "Home Care Volunteer", instructions : null },
   { _id : 6, name : "B6 Household Maintenance", type : "Material Well Being", role : "Home Care Volunteer", instructions : null },
   { _id : 7, name : "B7 Monitoring - Grant Usage", type : "Material Well Being", role : "Home Care Volunteer", instructions : null },
+  { _id : 701, name : "B8 Joined SHG Group", type : "Material Well Being", role : "Home Care Volunteer", instructions : null },
+  { _id : 702, name : "B9 Left SHG Group", type : "Material Well Being", role : "Home Care Volunteer", instructions : null },
   { _id : 8, name : "C1 Advise/Assistance in applying for a School Fee Exemption", type : "Cognitive Well Being", role : "Home Care Volunteer", instructions : null },
   { _id : 9, name : "C2 School Uniform Provision", type : "Cognitive Well Being", role : "Home Care Volunteer", instructions : null },
   { _id : 10, name : "C3 School Stationary Provision", type : "Cognitive Well Being", role : "Home Care Volunteer", instructions : null },
@@ -58,7 +60,7 @@ var services = [
   { _id : 37, name : "T7 Other Grants Received - Child Support Grants", type : "Documents, Grants and Status", role : "Home Care Volunteer", instructions : null },
   { _id : 38, name : "T8 Other Grants Received - Disability Grant", type : "Documents, Grants and Status", role : "Home Care Volunteer", instructions : null },
   { _id : 100, name : "D1 Caregiver / Family Consultation on Memory Work", type : "Other", role : "Home Care Volunteer", instructions : "A=Accepted or D=Declined" },
-  { _id : 101, name : "O1 - Other", type : "Other", role : "Home Care Volunteer", instructions : "Specify" },
+  { _id : 101, name : "O1 Other", type : "Other", role : "Home Care Volunteer", instructions : "Specify" },
   { _id : 39, name : "HA1- Child Immunization Card", type : "Symptoms", role : "Lay Counsellor", instructions : null },
   { _id : 40, name : "HA2- Clinic Card", type : "Symptoms", role : "Lay Counsellor", instructions : null },
   { _id : 41, name : "HB1- Ear Discharge / Aches", type : "Symptoms", role : "Lay Counsellor", instructions : null },
@@ -109,10 +111,10 @@ var services = [
   { _id : 86, name : "HE20- Referral For SRH", type : "Referrals", role : "Lay Counsellor", instructions : null },
   { _id : 87, name : "HE21- Referral For PMTCT", type : "Referrals", role : "Lay Counsellor", instructions : null },
   { _id : 88, name : "HE22- Referral for BP/Sugar or Other general health Concerns", type : "Referrals", role : "Lay Counsellor", instructions : null },
-  { _id : 89, name : "HE28- Referral to TCF Health Staff", type : "Referrals", role : "Lay Counsellor", instructions : null },
-  { _id : 90, name : "HE24- Started on prophylaxis", type : "Treatment and Monitoring", role : "Lay Counsellor", instructions : null },
-  { _id : 91, name : "HE25- Started on ARV’s", type : "Treatment and Monitoring", role : "Lay Counsellor", instructions : null },
-  { _id : 92, name : "HE26- Treatment Compliance Monitoring", type : "Treatment and Monitoring", role : "Lay Counsellor", instructions : null },
+  { _id : 89, name : "HE23- Referral to TCF Health Staff", type : "Referrals", role : "Lay Counsellor", instructions : null },
+  { _id : 90, name : "HE24 - Started on prophylaxis", type : "Treatment and Monitoring", role : "Lay Counsellor", instructions : null },
+  { _id : 91, name : "HE25 - Started on ARV’s", type : "Treatment and Monitoring", role : "Lay Counsellor", instructions : null },
+  { _id : 92, name : "HE26 - Treatment Compliance Monitoring", type : "Treatment and Monitoring", role : "Lay Counsellor", instructions : null },
   { _id : 102, name : "HB14 - Other symptoms", type : "Other", role : "Lay Counsellor", instructions : "Specify" },
   { _id : 103, name : "HC1B – Previously tested for HIV", type : "Other", role : "Lay Counsellor", instructions : "(NO = N or YES = Y)" },
   { _id : 104, name : "HC1C - If previously tested, WHEN?", type : "Other", role : "Lay Counsellor", instructions : "In last 6 months = < or More than 6 months ago = +" },
@@ -126,6 +128,8 @@ var services = [
 ];
 
 var visits = [];
+
+var attendance = [];
 
 
 app.get('/', function(req, res) {
@@ -272,6 +276,34 @@ app.post('/visits', function(req, res) {
   // quotes.push(newQuote);
   // // console.log(quotes);
   // res.json(true);
+});
+
+app.get('/attendance', function(req, res) {
+  res.json(attendance);
+});
+
+app.post('/attendance', function(req, res) {
+  // console.log(req);
+  // if(!req.body.hasOwnProperty('worker_id') || 
+  //    !req.body.hasOwnProperty('hh_id')) {
+  //   res.statusCode = 400;
+  //   return res.send('Error 400: Post syntax incorrect.');
+  // }
+
+  _.each(req.body, function (v) {
+    var reqKeys = _.keys(v);
+    var newAttendance = {};
+
+    _.each(reqKeys, function(k) {
+      newAttendance[k] = v[k];
+    });
+
+    attendance.push(newAttendance); 
+  });
+  console.log('Request: ', req.body);
+  
+
+  res.json(true);
 });
 
 // app.post('/quote', function(req, res) {
