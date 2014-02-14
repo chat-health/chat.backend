@@ -8,6 +8,8 @@ var xml2js = require('xml2js');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/chat');
 
+// Division of labour inspired by this article
+// https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
 var Client = require('./models/client');
 var Service = require('./models/service');
 
