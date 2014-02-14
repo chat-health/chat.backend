@@ -3,19 +3,17 @@ var app = express();
 var _ = require('lodash');
 app.use(express.bodyParser()); // this is needed to parse the body of requests like POST and PUT
 var fs = require('fs');
+var xml2js = require('xml2js');
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/chat');
 
+var Client = require('./models/client');
 var Service = require('./models/service');
 
 
 // Objects pulled to tablet
-var clients = [
-  {_id: 1, first_name: "John", last_name: "Doe", hh_id: 1, gender: "male"},
-  {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 1, gender: "female"},
-  {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 1, gender: "male"}
-];
+var clients = [];
 
 var households = [
   { _id : 1, hh_name : "John Doe", community : "snathing", worker_id : 1 },
@@ -40,7 +38,43 @@ app.get('/', function(req, res) {
 });
 
 app.get('/clients', function(req, res) {
-  res.json(clients);
+  // res.json(clients);
+  Client
+  .find()
+  .sort('_id')
+  .select('_id first_name last_name hh_id gender')
+  .exec(function (err, dbClients) {
+    if (err) throw err;
+    // console.log('%s %s is a %s.', person.name.first, person.name.last, person.occupation) // Space Ghost is a talk show host.
+    res.json(dbClients);
+  });
+});
+
+app.get('/clients.xml', function(req, res) {
+  var builder = new xml2js.Builder();
+
+  // res.json(clients);
+  Client
+  .find()
+  .sort('_id')
+  .select('_id first_name last_name hh_id gender')
+  .exec(function (err, dbClients) {
+    if (err) throw err;
+ 
+    var clientObject = {};
+    // var clientsObj = JSON.parse(dbClients);
+    _.each(dbClients, function (c) {
+      var cObj = c.toObject();
+      // clientArray.push(cObj);
+      clientObject['client-'+c._id] = cObj;
+      // xml += builder.buildObject(cObj);
+    });
+
+    var xml = builder.buildObject(clientObject);
+
+    res.writeHead( 200, {'Content-Type': 'text/xml'} );
+    res.end( xml );
+  });
 });
 
 app.get('/client/:id', function(req, res) {
@@ -55,6 +89,28 @@ app.get('/client/:id', function(req, res) {
     return res.send('Error 404: No client record found');
   }
 });
+
+app.post('/clients', function(req, res) {
+
+  _.each(req.body, function (v) {
+    var reqKeys = _.keys(v);
+    var newObject = {};
+
+    _.each(reqKeys, function(k) {
+      newObject[k] = v[k];
+    });
+
+    var client = new Client(newObject);
+    client.save(function (err) {
+      if (err) throw err;
+      // saved!
+    });
+  });
+
+  res.json(true);
+});
+
+
 
 app.get('/households', function(req, res) {
   res.json(households);
