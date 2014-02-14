@@ -1,3 +1,5 @@
+// Via http://isolasoftware.it/2012/05/28/call-rest-api-with-node-js/
+
 var https = require('http');
 var fs = require('fs');
 

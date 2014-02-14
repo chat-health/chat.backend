@@ -4,6 +4,11 @@ var _ = require('lodash');
 app.use(express.bodyParser()); // this is needed to parse the body of requests like POST and PUT
 var fs = require('fs');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/chat');
+
+var Service = require('./models/service');
+
 
 // Objects pulled to tablet
 var clients = [
@@ -93,7 +98,17 @@ app.get('/worker/:id', function(req, res) {
 });
 
 app.get('/services', function(req, res) {
-  res.json(services);
+  Service
+  .find()
+  .sort('_id')
+  .select('_id name type role instructions')
+  .exec(function (err, dbServices) {
+    if (err) throw err;
+    // console.log('%s %s is a %s.', person.name.first, person.name.last, person.occupation) // Space Ghost is a talk show host.
+    res.json(dbServices);
+  });
+
+  // res.json(services);
 });
 
 app.get('/service/:id', function(req, res) {
@@ -120,8 +135,14 @@ app.post('/services', function(req, res) {
       newObject[k] = v[k];
     });
 
-    services.push(newObject);
-    console.log(services);  
+    var service = new Service(newObject);
+    service.save(function (err) {
+      if (err) throw err;
+      // saved!
+    });
+
+    // services.push(newObject);
+    // console.log(services);  
   });
 
   res.json(true);
