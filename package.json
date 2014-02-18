@@ -14,7 +14,7 @@
     "express": "3.x",
     "lodash": "~2.3.0",
     "mongoose": "*",
-    "xml2js": "*"
+    "xmlbuilder": "*"
   },
   "devDependencies": {
     "grunt": "~0.4.0",

@@ -3,7 +3,9 @@ var app = express();
 var _ = require('lodash');
 app.use(express.bodyParser()); // this is needed to parse the body of requests like POST and PUT
 var fs = require('fs');
-var xml2js = require('xml2js');
+// var xml2js = require('xml2js');
+// XML capability
+var builder = require('xmlbuilder');
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/chat');
@@ -54,7 +56,10 @@ app.get('/clients', function(req, res) {
 });
 
 app.get('/clients.xml', function(req, res) {
-  var builder = new xml2js.Builder();
+  // var builder = new xml2js.Builder();
+  var builder = require('xmlbuilder');
+  var xmlRoot = builder.create('clients');
+  // var jsonxml = require('jsontoxml');
 
   // res.json(clients);
   Client
@@ -63,18 +68,37 @@ app.get('/clients.xml', function(req, res) {
   // .select('_id first_name last_name hh_id gender')
   .exec(function (err, dbClients) {
     if (err) throw err;
-    var xml = '';
  
     var clientObject = {};
+    var isFirst = true;
     // var clientsObj = JSON.parse(dbClients);
     _.each(dbClients, function (c) {
       var cObj = c.toObject();
       // clientArray.push(cObj);
       clientObject.client = cObj;
-      xml += builder.buildObject(clientObject);
+      clientObject.client['@id'] = cObj._id;
+
+      var ele = xmlRoot.ele(clientObject);
+      
     });
 
     // var xml = builder.buildObject(clientObject);
+    // var xml = builder.create({
+    //     root: {
+    //       xmlbuilder: {
+    //         '@for': 'node-js', // attributes start with @
+    //         repo: {
+    //           '@type': 'git',
+    //           '#text': 'git://github.com/oozcitak/xmlbuilder-js.git' // #text denotes element text
+    //         }
+    //       }
+    //     }
+    //   }).end();
+
+    var xml = xmlRoot.end();
+
+    console.log(xml);
+
 
     res.writeHead( 200, {'Content-Type': 'text/xml'} );
     res.end( xml );
