@@ -45,7 +45,7 @@ app.get('/clients', function(req, res) {
   Client
   .find()
   .sort('_id')
-  .select('_id first_name last_name hh_id gender')
+  //.select('_id first_name last_name hh_id gender date_of_birth')
   .exec(function (err, dbClients) {
     if (err) throw err;
     // console.log('%s %s is a %s.', person.name.first, person.name.last, person.occupation) // Space Ghost is a talk show host.
@@ -60,20 +60,21 @@ app.get('/clients.xml', function(req, res) {
   Client
   .find()
   .sort('_id')
-  .select('_id first_name last_name hh_id gender')
+  // .select('_id first_name last_name hh_id gender')
   .exec(function (err, dbClients) {
     if (err) throw err;
+    var xml = '';
  
     var clientObject = {};
     // var clientsObj = JSON.parse(dbClients);
     _.each(dbClients, function (c) {
       var cObj = c.toObject();
       // clientArray.push(cObj);
-      clientObject['client-'+c._id] = cObj;
-      // xml += builder.buildObject(cObj);
+      clientObject.client = cObj;
+      xml += builder.buildObject(clientObject);
     });
 
-    var xml = builder.buildObject(clientObject);
+    // var xml = builder.buildObject(clientObject);
 
     res.writeHead( 200, {'Content-Type': 'text/xml'} );
     res.end( xml );
@@ -160,7 +161,7 @@ app.get('/services', function(req, res) {
   Service
   .find()
   .sort('_id')
-  .select('_id name type role instructions')
+  // .select('_id name type role instructions')
   .exec(function (err, dbServices) {
     if (err) throw err;
     // console.log('%s %s is a %s.', person.name.first, person.name.last, person.occupation) // Space Ghost is a talk show host.
