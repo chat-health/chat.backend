@@ -12,9 +12,9 @@ var Service = require('./models/service');
 
 // Objects pulled to tablet
 var clients = [
-  {_id: 1, first_name: "John", last_name: "Doe", hh_id: 1, gender: "male"},
-  {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 1, gender: "female"},
-  {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 1, gender: "male"}
+  {_id: 1, first_name: "John", last_name: "Doe", hh_id: 1, gender: "male", date_of_birth: "1980-12-29T00:00:00.0Z"},
+  {_id: 2, first_name: "Jane", last_name: "Jacobs", hh_id: 1, gender: "female", date_of_birth: "1981-12-29T00:00:00.0Z"},
+  {_id: 3, first_name: "Davey", last_name: "Jones", hh_id: 1, gender: "male",  date_of_birth: "2012-12-29T00:00:00.0Z"}
 ];
 
 var households = [
