@@ -158,7 +158,7 @@ app.get('/household/:id', function(req, res) {
 
 app.get('/workers', function(req, res) {
   //res.json(workers);
-  Client
+  Worker
   .find()
   .sort('_id')
   .exec(function (err, dbClients)  {
