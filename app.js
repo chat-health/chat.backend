@@ -19,10 +19,10 @@ var Household = require('./models/household');
 
 
 // Objects pulled by tablet
-var clients = [];
-var services = [];
-var workers = [];
-var households = [];
+// var clients = [];
+// var services = [];
+// var workers = [];
+// var households = [];
 
 
 // Objects pushed by tablet
@@ -47,53 +47,24 @@ app.get('/clients', function(req, res) {
 });
 
 app.get('/clients.xml', function(req, res) {
-  // var builder = new xml2js.Builder();
-  var builder = require('xmlbuilder');
   var xmlRoot = builder.create('clients');
-  // var jsonxml = require('jsontoxml');
+  
+  retrieveAllFrom (Client)
+    .on('complete', function (data) {
+      _.each(data, function(d) {
+        var clientObject = {'client':d.toObject()};
+        clientObject.client['@id'] = d.toObject()._id;
 
-  // res.json(clients);
-  Client
-  .find()
-  .sort('_id')
-  // .select('_id first_name last_name hh_id gender')
-  .exec(function (err, dbClients) {
-    if (err) throw err;
- 
-    var clientObject = {};
-    var isFirst = true;
-    // var clientsObj = JSON.parse(dbClients);
-    _.each(dbClients, function (c) {
-      var cObj = c.toObject();
-      // clientArray.push(cObj);
-      clientObject.client = cObj;
-      clientObject.client['@id'] = cObj._id;
+        xmlRoot.ele(clientObject);
+      });
 
-      var ele = xmlRoot.ele(clientObject);
-      
+      res.writeHead( 200, {'Content-Type': 'text/xml'} );
+      res.end( xmlRoot.end() );
+    })
+    .on('err', function (err){
+      res.statusCode = 404;
+      return res.send('Error 404: Requested data not found');
     });
-
-    // var xml = builder.buildObject(clientObject);
-    // var xml = builder.create({
-    //     root: {
-    //       xmlbuilder: {
-    //         '@for': 'node-js', // attributes start with @
-    //         repo: {
-    //           '@type': 'git',
-    //           '#text': 'git://github.com/oozcitak/xmlbuilder-js.git' // #text denotes element text
-    //         }
-    //       }
-    //     }
-    //   }).end();
-
-    var xml = xmlRoot.end();
-
-    console.log(xml);
-
-
-    res.writeHead( 200, {'Content-Type': 'text/xml'} );
-    res.end( xml );
-  });
 });
 
 app.get('/client/:id', function(req, res) {
@@ -217,9 +188,6 @@ app.post('/workers', function(req, res) {
       if (err) throw err;
       // saved!
     });
-
-    // services.push(newObject);
-    // console.log(services);  
   });
 
   res.json(true);
