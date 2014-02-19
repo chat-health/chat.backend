@@ -1,14 +1,29 @@
-// Via http://isolasoftware.it/2012/05/28/call-rest-api-with-node-js/
+// grab information from user to be more specific
+var argv = require('optimist')
+  .usage('Usage:\n\t$0 <collection to populate>')
+  .demand(1)
+  .argv;
 
+var COLLECTION = argv._[0];
+
+// Via http://isolasoftware.it/2012/05/28/call-rest-api-with-node-js/
 var https = require('http');
 var fs = require('fs');
+var jsonObject;
 
-var services = fs.readFileSync('./test_data/services.json', 'utf8');
-var clients = fs.readFileSync('./test_data/clients.json', 'utf8');
-var workers = fs.readFileSync('./test_data/workers.json', 'utf8');
 
-// jsonObject = JSON.stringify(services);
-
+// To add a new COLLECTION please put in a if else that reads the json into jsonObject
+if (COLLECTION === "services") {
+    jsonObject = fs.readFileSync('./test_data/services.json', 'utf8');
+} else if (COLLECTION === "clients") {
+    jsonObject = fs.readFileSync('./test_data/clients.json', 'utf8');    
+} else if (COLLECTION === "workers") {
+    jsonObject = fs.readFileSync('./test_data/workers.json', 'utf8');
+} else {
+    console.warn("A unknown collection <"+COLLECTION+"> was choosen.");
+    console.error("Exit with error");
+    process.exit(1);
+}
 
 // prepare the header
 var postheaders = {
@@ -20,7 +35,7 @@ var postheaders = {
 var optionspost = {
     host : '0.0.0.0',
     port : 8000,
-    path : '/services',
+    path : '/'+COLLECTION,
     method : 'POST',
     headers : postheaders
 };
@@ -30,82 +45,10 @@ console.info(optionspost);
 console.info('Do the POST calls');
 
 
-// =============== do the POST call to write SERVICES ===============
-jsonObject = services;
-
 var reqPost = https.request(optionspost, function(res) {
     console.log("statusCode: ", res.statusCode);
     // uncomment it for header details
-//  console.log("headers: ", res.headers);
-
-    res.on('data', function(d) {
-        console.info('POST result:\n');
-        process.stdout.write(d);
-        console.info('\n\nPOST completed');
-    });
-});
-
-// write the json data
-// reqPost.write(jsonObject);
-// reqPost.end();
-// reqPost.on('error', function(e) {
-//     console.error(e);
-// });
-
-
-// =============== do the POST call to write CLIENTS ===============
-var optionspost = {
-    host : '0.0.0.0',
-    port : 8000,
-    path : '/clients',
-    method : 'POST',
-    headers : postheaders
-};
-
-console.info('Options prepared:');
-console.info(optionspost);
-console.info('Do the POST calls');
-
-jsonObject = clients;
-
-var reqPost = https.request(optionspost, function(res) {
-    console.log("statusCode: ", res.statusCode);
-    // uncomment it for header details
-//  console.log("headers: ", res.headers);
-
-    res.on('data', function(d) {
-        console.info('POST result:\n');
-        process.stdout.write(d);
-        console.info('\n\nPOST completed');
-    });
-});
-
-// reqPost.write(jsonObject);
-// reqPost.end();
-// reqPost.on('error', function(e) {
-//     console.error(e);
-// });
-
-
-// =============== do the POST call to write WORKERS ===============
-var optionspost = {
-    host : '0.0.0.0',
-    port : 8000,
-    path : '/workers',
-    method : 'POST',
-    headers : postheaders
-};
-
-console.info('Options prepared:');
-console.info(optionspost);
-console.info('Do the POST calls');
-
-jsonObject = workers;
-
-var reqPost = https.request(optionspost, function(res) {
-    console.log("statusCode: ", res.statusCode);
-    // uncomment it for header details
-//  console.log("headers: ", res.headers);
+    console.log("headers: ", res.headers);
 
     res.on('data', function(d) {
         console.info('POST result:\n');
