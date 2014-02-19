@@ -6,5 +6,6 @@ var Client = new mongoose.Schema({
   hh_id : Number,
   gender : String,
   date_of_birth: String
-});
+}, { versionKey: false });
+// Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
 module.exports = mongoose.model('Client', Client);
