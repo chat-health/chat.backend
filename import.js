@@ -19,6 +19,8 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/clients.json', 'utf8');    
 } else if (COLLECTION === "workers") {
     jsonObject = fs.readFileSync('./test_data/workers.json', 'utf8');
+} else if (COLLECTION === "households") {
+    jsonObject = fs.readFileSync('./test_data/households.json', 'utf8');
 } else {
     console.warn("A unknown collection <"+COLLECTION+"> was choosen.");
     console.error("Exit with error");

@@ -15,23 +15,17 @@ mongoose.connect('mongodb://localhost/chat');
 var Client = require('./models/client');
 var Service = require('./models/service');
 var Worker = require('./models/worker');
+var Household = require('./models/household');
 
 
-// Objects pulled to tablet
+// Objects pulled by tablet
 var clients = [];
 var services = [];
 var workers = [];
+var households = [];
 
 
-
-var households = [
-  { _id : 1, hh_name : "John Doe", community : "snathing", worker_id : 1 },
-  { _id : 2, hh_name : "Jason Dobosch", community : "snathing", worker_id : 1 }
-];
-
-
-
-// Objects pushed from tablet
+// Objects pushed by tablet
 var visits = [];
 var attendance = [];
 
@@ -42,16 +36,14 @@ app.get('/', function(req, res) {
 });
 
 app.get('/clients', function(req, res) {
-  // res.json(clients);
-  Client
-  .find()
-  .sort('_id')
-  //.select('_id first_name last_name hh_id gender date_of_birth')
-  .exec(function (err, dbClients) {
-    if (err) throw err;
-    // console.log('%s %s is a %s.', person.name.first, person.name.last, person.occupation) // Space Ghost is a talk show host.
-    res.json(dbClients);
-  });
+  retrieveAllFrom (Client)
+    .on('complete', function (data) {
+      res.json(data);
+    })
+    .on('err', function (err){
+      res.statusCode = 404;
+      return res.send('Error 404: Requested data not found');
+    });
 });
 
 app.get('/clients.xml', function(req, res) {
@@ -140,7 +132,14 @@ app.post('/clients', function(req, res) {
 
 
 app.get('/households', function(req, res) {
-  res.json(households);
+  retrieveAllFrom (Household)
+    .on('complete', function (data) {
+      res.json(data);
+    })
+    .on('err', function (err){
+      res.statusCode = 404;
+      return res.send('Error 404: Requested data not found');
+    });
 });
 
 app.get('/household/:id', function(req, res) {
@@ -156,36 +155,52 @@ app.get('/household/:id', function(req, res) {
   }
 });
 
+app.post('/households', function(req, res) {
+
+  _.each(req.body, function (v) {
+    var reqKeys = _.keys(v);
+    var newObject = {};
+
+    _.each(reqKeys, function(k) {
+      newObject[k] = v[k];
+    });
+
+    var household = new Household(newObject);
+    household.save(function (err) {
+      if (err) throw err;
+      // saved!
+    });
+  });
+
+  res.json(true);
+});
+
+
+
+
 app.get('/workers', function(req, res) {
-  //res.json(workers);
-  Worker
-  .find()
-  .sort('_id')
-  .exec(function (err, dbClients)  {
-    if (err) throw err;
-    res.json(dbClients);
-  });
+  retrieveAllFrom (Worker)
+    .on('complete', function (data) {
+      res.json(data);
+    })
+    .on('err', function (err){
+      res.statusCode = 404;
+      return res.send('Error 404: Requested data not found');
+    });
 });
 
-app.get('/worker/:id', function(req, res) {
-  var worker = _.find(workers, function (w) {
-    return w._id === parseInt(req.params.id, 10);
-  });
+// app.get('/worker/:id', function(req, res) {
+//   var worker = _.find(workers, function (w) {
+//     return w._id === parseInt(req.params.id, 10);
+//   });
 
-  if (worker) {
-    res.json(worker);
-  } else {
-    res.statusCode = 404;
-    return res.send('Error 404: No worker record found');
-  }
-  // if(workers.length <= req.params.id || req.params.id < 0) {
-  //   res.statusCode = 404;
-  //   return res.send('Error 404: No worker record found found');
-  // }
-
-  // var q = workers[req.params.id];
-  // res.json(q);
-});
+//   if (worker) {
+//     res.json(worker);
+//   } else {
+//     res.statusCode = 404;
+//     return res.send('Error 404: No worker record found');
+//   }
+// });
 
 app.post('/workers', function(req, res) {
 
@@ -212,31 +227,28 @@ app.post('/workers', function(req, res) {
 
 
 app.get('/services', function(req, res) {
-  Service
-  .find()
-  .sort('_id')
-  // .select('_id name type role instructions')
-  .exec(function (err, dbServices) {
-    if (err) throw err;
-    // console.log('%s %s is a %s.', person.name.first, person.name.last, person.occupation) // Space Ghost is a talk show host.
-    res.json(dbServices);
-  });
-
-  // res.json(services);
+  retrieveAllFrom (Service)
+    .on('complete', function (data) {
+      res.json(data);
+    })
+    .on('err', function (err){
+      res.statusCode = 404;
+      return res.send('Error 404: Requested data not found');
+    });
 });
 
-app.get('/service/:id', function(req, res) {
-  var service = _.find(services, function (h) {
-    return h._id === parseInt(req.params.id, 10);
-  });
+// app.get('/service/:id', function(req, res) {
+//   var service = _.find(services, function (h) {
+//     return h._id === parseInt(req.params.id, 10);
+//   });
 
-  if (service) {
-    res.json(service);
-  } else {
-    res.statusCode = 404;
-    return res.send('Error 404: No service record found');
-  }
-});
+//   if (service) {
+//     res.json(service);
+//   } else {
+//     res.statusCode = 404;
+//     return res.send('Error 404: No service record found');
+//   }
+// });
 
 
 app.post('/services', function(req, res) {
@@ -274,27 +286,7 @@ app.get('/visits', function(req, res) {
   res.json(visits);
 });
 
-// app.get('/visits/:id', function(req, res){
-//   var visit = _.find(visits, function (v) {
-//     return v._id === parseInt(req.params.id, 10);
-//   });
-
-//   if (visit) {
-//     res.json(visit);
-//   } else {
-//     res.statusCode = 404;
-//     return res.send('Error 404: No visit record found');
-//   }
-// });
-
 app.post('/visits', function(req, res) {
-  // console.log(req);
-  // if(!req.body.hasOwnProperty('worker_id') || 
-  //    !req.body.hasOwnProperty('hh_id')) {
-  //   res.statusCode = 400;
-  //   return res.send('Error 400: Post syntax incorrect.');
-  // }
-
   _.each(req.body, function (v) {
     var reqKeys = _.keys(v);
     var newVisit = {};
@@ -307,33 +299,7 @@ app.post('/visits', function(req, res) {
     console.log(visits);  
   });
 
-  
-
   res.json(true);
-
-  // var newVisit = {
-  //   hh_id: req.body.hh_id,
-  //   date: req.body.date,
-  //   worker_id: 123 (should be an int, right?),
-  //   lon: 43.343543,
-  //   lat: 79.94949,
-  //   start_time: {$date: "2013-11-28 14:00:00"},
-  //   start_time: {$date: "2013-11-28 14:00:00"},
-  //   resource_accessed: true,
-  //   service_accessed: false,
-  //   video_accessed: true,
-  //   type: "What is the type of a visit?",
-  //   resources_accessed: [1, 8, 9],
-  //   services_accessed: [],
-  //   video_accessed: [1, 5, 39]
-
-  //   author : req.body.author,
-  //   text : req.body.text
-  // };
-  // // console.log(newQuote);
-  // quotes.push(newQuote);
-  // // console.log(quotes);
-  // res.json(true);
 });
 
 app.get('/attendance', function(req, res) {
@@ -341,13 +307,6 @@ app.get('/attendance', function(req, res) {
 });
 
 app.post('/attendance', function(req, res) {
-  // console.log(req);
-  // if(!req.body.hasOwnProperty('worker_id') || 
-  //    !req.body.hasOwnProperty('hh_id')) {
-  //   res.statusCode = 400;
-  //   return res.send('Error 400: Post syntax incorrect.');
-  // }
-
   _.each(req.body, function (v) {
     var reqKeys = _.keys(v);
     var newAttendance = {};
@@ -363,6 +322,10 @@ app.post('/attendance', function(req, res) {
 
   res.json(true);
 });
+
+function retrieveAllFrom (Model) {
+  return Model.find().exec();
+}
 
 // app.post('/quote', function(req, res) {
 //   // console.log(req);
