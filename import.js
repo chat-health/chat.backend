@@ -5,6 +5,7 @@ var fs = require('fs');
 
 var services = fs.readFileSync('./test_data/services.json', 'utf8');
 var clients = fs.readFileSync('./test_data/clients.json', 'utf8');
+var workers = fs.readFileSync('./test_data/workers.json', 'utf8');
 
 // jsonObject = JSON.stringify(services);
 
@@ -65,9 +66,41 @@ console.info('Options prepared:');
 console.info(optionspost);
 console.info('Do the POST calls');
 
-
-// =============== do the POST call to write SERVICES ===============
 jsonObject = clients;
+
+var reqPost = https.request(optionspost, function(res) {
+    console.log("statusCode: ", res.statusCode);
+    // uncomment it for header details
+//  console.log("headers: ", res.headers);
+
+    res.on('data', function(d) {
+        console.info('POST result:\n');
+        process.stdout.write(d);
+        console.info('\n\nPOST completed');
+    });
+});
+
+// reqPost.write(jsonObject);
+// reqPost.end();
+// reqPost.on('error', function(e) {
+//     console.error(e);
+// });
+
+
+// =============== do the POST call to write WORKERS ===============
+var optionspost = {
+    host : '0.0.0.0',
+    port : 8000,
+    path : '/workers',
+    method : 'POST',
+    headers : postheaders
+};
+
+console.info('Options prepared:');
+console.info(optionspost);
+console.info('Do the POST calls');
+
+jsonObject = workers;
 
 var reqPost = https.request(optionspost, function(res) {
     console.log("statusCode: ", res.statusCode);

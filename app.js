@@ -14,10 +14,14 @@ mongoose.connect('mongodb://localhost/chat');
 // https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
 var Client = require('./models/client');
 var Service = require('./models/service');
+var Worker = require('./models/worker');
 
 
 // Objects pulled to tablet
 var clients = [];
+var services = [];
+var workers = [];
+
 
 
 var households = [
@@ -25,12 +29,7 @@ var households = [
   { _id : 2, hh_name : "Jason Dobosch", community : "snathing", worker_id : 1 }
 ];
 
-var workers = [
-  { _id : 1, first_name : "colin", last_name : "mccann", password : "chat", role_name : "councellor", assigned_community : "snathing" },
-  { _id : 2, first_name : "Armin", last_name : "Krauss", password : "chat", role_name : "volunteer", assigned_community : "snathing" }
-];
 
-var services = [];
 
 // Objects pushed from tablet
 var visits = [];
@@ -158,7 +157,14 @@ app.get('/household/:id', function(req, res) {
 });
 
 app.get('/workers', function(req, res) {
-  res.json(workers);
+  //res.json(workers);
+  Client
+  .find()
+  .sort('_id')
+  .exec(function (err, dbClients)  {
+    if (err) throw err;
+    res.json(dbClients);
+  });
 });
 
 app.get('/worker/:id', function(req, res) {
@@ -180,6 +186,30 @@ app.get('/worker/:id', function(req, res) {
   // var q = workers[req.params.id];
   // res.json(q);
 });
+
+app.post('/workers', function(req, res) {
+
+  _.each(req.body, function (v) {
+    var reqKeys = _.keys(v);
+    var newObject = {};
+
+    _.each(reqKeys, function(k) {
+      newObject[k] = v[k];
+    });
+
+    var worker = new Worker(newObject);
+    worker.save(function (err) {
+      if (err) throw err;
+      // saved!
+    });
+
+    // services.push(newObject);
+    // console.log(services);  
+  });
+
+  res.json(true);
+});
+
 
 app.get('/services', function(req, res) {
   Service
@@ -232,6 +262,12 @@ app.post('/services', function(req, res) {
   res.json(true);
 });
 
+
+
+
+
+
+// ************************* PUSH ******************************
 
 
 app.get('/visits', function(req, res) {
