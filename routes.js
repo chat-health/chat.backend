@@ -2,15 +2,19 @@ var _ = require('underscore');
 // XML capability
 var builder = require('xmlbuilder');
 
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/chat');
-
 // Division of labour inspired by this article
 // https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
-var Client = require('./models/client');
-var Service = require('./models/service');
-var Worker = require('./models/worker');
-var Household = require('./models/household');
+var db = require('./db');
+var Client = db.Client;
+var Service = db.Service;
+var Worker = db.Worker;
+var Household = db.Household;
+var Visit = db.Visit;
+
+
+var retrieveAllFrom = function (Model) {
+  return Model.find().exec();
+};
 
 
 module.exports = function (app) {
@@ -66,23 +70,14 @@ module.exports = function (app) {
   });
 
   app.post('/clients', function(req, res) {
-
-    _.each(req.body, function (v) {
-      var reqKeys = _.keys(v);
-      var newObject = {};
-
-      _.each(reqKeys, function(k) {
-        newObject[k] = v[k];
+    db.storeObjIn(req.body, req.route.path)
+      .onFulfill(function (visit) {
+        return res.json(true);
+      })
+      .onReject(function(reason) {
+        res.statusCode = 404;
+        return res.send(reason.message);
       });
-
-      var client = new Client(newObject);
-      client.save(function (err) {
-        if (err) throw err;
-        // saved!
-      });
-    });
-
-    res.json(true);
   });
 
 
@@ -98,37 +93,28 @@ module.exports = function (app) {
       });
   });
 
-  app.get('/household/:id', function(req, res) {
-    var household = _.find(households, function (h) {
-      return h._id === parseInt(req.params.id, 10);
-    });
+  // app.get('/household/:id', function(req, res) {
+  //   var household = _.find(households, function (h) {
+  //     return h._id === parseInt(req.params.id, 10);
+  //   });
 
-    if (household) {
-      res.json(household);
-    } else {
-      res.statusCode = 404;
-      return res.send('Error 404: No household record found');
-    }
-  });
+  //   if (household) {
+  //     res.json(household);
+  //   } else {
+  //     res.statusCode = 404;
+  //     return res.send('Error 404: No household record found');
+  //   }
+  // });
 
   app.post('/households', function(req, res) {
-
-    _.each(req.body, function (v) {
-      var reqKeys = _.keys(v);
-      var newObject = {};
-
-      _.each(reqKeys, function(k) {
-        newObject[k] = v[k];
+    db.storeObjIn(req.body, req.route.path)
+      .onFulfill(function (visit) {
+        return res.json(true);
+      })
+      .onReject(function(reason) {
+        res.statusCode = 404;
+        return res.send(reason.message);
       });
-
-      var household = new Household(newObject);
-      household.save(function (err) {
-        if (err) throw err;
-        // saved!
-      });
-    });
-
-    res.json(true);
   });
 
 
@@ -145,37 +131,15 @@ module.exports = function (app) {
       });
   });
 
-  // app.get('/worker/:id', function(req, res) {
-  //   var worker = _.find(workers, function (w) {
-  //     return w._id === parseInt(req.params.id, 10);
-  //   });
-
-  //   if (worker) {
-  //     res.json(worker);
-  //   } else {
-  //     res.statusCode = 404;
-  //     return res.send('Error 404: No worker record found');
-  //   }
-  // });
-
   app.post('/workers', function(req, res) {
-
-    _.each(req.body, function (v) {
-      var reqKeys = _.keys(v);
-      var newObject = {};
-
-      _.each(reqKeys, function(k) {
-        newObject[k] = v[k];
+    db.storeObjIn(req.body, req.route.path)
+      .onFulfill(function (visit) {
+        return res.json(true);
+      })
+      .onReject(function(reason) {
+        res.statusCode = 404;
+        return res.send(reason.message);
       });
-
-      var worker = new Worker(newObject);
-      worker.save(function (err) {
-        if (err) throw err;
-        // saved!
-      });
-    });
-
-    res.json(true);
   });
 
 
@@ -190,41 +154,15 @@ module.exports = function (app) {
       });
   });
 
-  // app.get('/service/:id', function(req, res) {
-  //   var service = _.find(services, function (h) {
-  //     return h._id === parseInt(req.params.id, 10);
-  //   });
-
-  //   if (service) {
-  //     res.json(service);
-  //   } else {
-  //     res.statusCode = 404;
-  //     return res.send('Error 404: No service record found');
-  //   }
-  // });
-
-
   app.post('/services', function(req, res) {
-
-    _.each(req.body, function (v) {
-      var reqKeys = _.keys(v);
-      var newObject = {};
-
-      _.each(reqKeys, function(k) {
-        newObject[k] = v[k];
+    db.storeObjIn(req.body, req.route.path)
+      .onFulfill(function (visit) {
+        return res.json(true);
+      })
+      .onReject(function(reason) {
+        res.statusCode = 404;
+        return res.send(reason.message);
       });
-
-      var service = new Service(newObject);
-      service.save(function (err) {
-        if (err) throw err;
-        // saved!
-      });
-
-      // services.push(newObject);
-      // console.log(services);  
-    });
-
-    res.json(true);
   });
 
 
@@ -232,47 +170,41 @@ module.exports = function (app) {
 
 
   app.get('/visits', function(req, res) {
-    res.json(visits);
+    retrieveAllFrom (Visit)
+      .on('complete', function (data) {
+        res.json(data);
+      })
+      .on('err', function (err){
+        res.statusCode = 404;
+        return res.send('Error 404: Requested data not found');
+      });
   });
+
 
   app.post('/visits', function(req, res) {
-    _.each(req.body, function (v) {
-      var reqKeys = _.keys(v);
-      var newVisit = {};
-
-      _.each(reqKeys, function(k) {
-        newVisit[k] = v[k];
+    db.storeObjIn(req.body, req.route.path)
+      .onFulfill(function (visit) {
+        return res.json(true);
+      })
+      .onReject(function(reason) {
+        res.statusCode = 404;
+        return res.send(reason.message);
       });
-
-      visits.push(newVisit);
-      console.log(visits);  
-    });
-
-    res.json(true);
   });
+
 
   app.get('/attendance', function(req, res) {
     res.json(attendance);
   });
 
   app.post('/attendance', function(req, res) {
-    _.each(req.body, function (v) {
-      var reqKeys = _.keys(v);
-      var newAttendance = {};
-
-      _.each(reqKeys, function(k) {
-        newAttendance[k] = v[k];
+    db.storeObjIn(req.body, req.route.path)
+      .onFulfill(function (visit) {
+        return res.json(true);
+      })
+      .onReject(function(reason) {
+        res.statusCode = 404;
+        return res.send(reason.message);
       });
-
-      attendance.push(newAttendance); 
-    });
-    console.log('Request: ', req.body);
-    
-
-    res.json(true);
   });
-
-  function retrieveAllFrom (Model) {
-    return Model.find().exec();
-  }
 };
