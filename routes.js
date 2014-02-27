@@ -5,6 +5,9 @@ var builder = require('xmlbuilder');
 // Division of labour inspired by this article
 // https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
 var db = require('./db');
+// var regex = /\/.*?\//;
+var regex = /\/([^\/]*)\//;
+var regexXml = /\/([^\/]*)\./;
 
 // ====================== ROUTING ==========================================
 module.exports = function (app) {
@@ -16,43 +19,12 @@ module.exports = function (app) {
 
 
   app.get('/clients', function(req, res) {
-    handleGet(req, res);
+    handleGetAll(req, res, req.param('enc'));
   });
 
-  app.get('/clients.xml', function(req, res) {
-    var collection = req.route.path.substring(1,req.route.path.length -4);
-    var xmlRoot = builder.create('clients');
-    
-    db.retrieveAllFrom (collection)
-      .on('complete', function (data) {
-        _.each(data, function(d) {
-          var clientObject = {'client':d.toObject()};
-          clientObject.client['@id'] = d.toObject()._id;
-
-          xmlRoot.ele(clientObject);
-        });
-
-        res.writeHead( 200, {'Content-Type': 'text/xml'} );
-        res.end( xmlRoot.end() );
-      })
-      .on('err', function (err){
-        res.statusCode = 404;
-        return res.send('Error 404: Requested data not found');
-      });
+  app.get('/clients/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
   });
-
-  // app.get('/client/:id', function(req, res) {
-  //   var client = _.find(clients, function (c) {
-  //     return c._id === parseInt(req.params.id, 10);
-  //   });
-
-  //   if (client) {
-  //     res.json(client);
-  //   } else {
-  //     res.statusCode = 404;
-  //     return res.send('Error 404: No client record found');
-  //   }
-  // });
 
   app.post('/clients', function(req, res) {
     handlePost(req, res);
@@ -61,7 +33,11 @@ module.exports = function (app) {
 
 
   app.get('/households', function(req, res) {
-    handleGet(req, res);
+    handleGetAll(req, res, req.param('enc'));
+  });
+
+  app.get('/households/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
   app.post('/households', function(req, res) {
@@ -69,8 +45,13 @@ module.exports = function (app) {
   });
 
 
+
   app.get('/workers', function(req, res) {
-    handleGet(req, res);
+    handleGetAll(req, res, req.param('enc'));
+  });
+
+  app.get('/workers/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
   app.post('/workers', function(req, res) {
@@ -80,7 +61,11 @@ module.exports = function (app) {
 
 
   app.get('/services', function(req, res) {
-    handleGet(req, res);
+    handleGetAll(req, res, req.param('enc'));
+  });
+
+  app.get('/services/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
   app.post('/services', function(req, res) {
@@ -92,7 +77,11 @@ module.exports = function (app) {
 
 
   app.get('/visits', function(req, res) {
-    handleGet(req, res);
+    handleGetAll(req, res, req.param('enc'));
+  });
+
+  app.get('/visits/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
   app.post('/visits', function(req, res) {
@@ -101,7 +90,11 @@ module.exports = function (app) {
 
 
   app.get('/attendance', function(req, res) {
-    handleGet(req, res);
+    handleGetAll(req, res, req.param('enc'));
+  });
+
+  app.get('/attendance/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
   app.post('/attendance', function(req, res) {
@@ -111,19 +104,73 @@ module.exports = function (app) {
 
 
 // ========== Helper function that do the work ;) ===============================
-var handleGet = function (req, res) {
+var handleGetAll = function (req, res, encoding) {
   var collection = req.route.path.substring(1,req.route.path.length);
   // var collection = route
 
   db.retrieveAllFrom (collection)
     .onFulfill(function (data) {
-      res.json(data);
+      if (encoding === "xml") {
+        var xmlRoot = builder.create(collection);
+
+        _.each(data, function(d) {
+          var dObj = {};
+          // the following seems weird but is necessary to make dates work
+          // They are stored as ISODate in Mongo and will crash the XML parser
+          // Stringifying and parsing back creates a string representation of date that passes the XML parser
+          var obj = JSON.parse(JSON.stringify(d.toObject()));
+          dObj[collection] = obj;
+          dObj[collection]['@id'] = obj._id;
+
+          xmlRoot.ele(dObj);
+        });
+
+        res.writeHead( 200, {'Content-Type': 'text/xml'} );
+        res.end( xmlRoot.end() );
+      } else {
+        res.json(data);
+      }
     })
     .onReject(function (reason){
       res.statusCode = 404;
       return res.send('Error 404: Requested data not found. Reason: '+reason.message);
     });
 };
+
+var handleGetByID = function (req, res, id, encoding) {
+  var collection = req.route.path.match(regex)[1];
+
+  var where = {'_id': id};
+
+  db.retrieveFromWhere (collection, where)
+    .onFulfill(function (data) {
+      if (encoding === "xml") {
+        var xmlRoot = builder.create(collection);
+
+        _.each(data, function(d) {
+          var dObj = {};
+          // the following seems weird but is necessary to make dates work
+          // They are stored as ISODate in Mongo and will crash the XML parser
+          // Stringifying and parsing back creates a string representation of date that passes the XML parser
+          var obj = JSON.parse(JSON.stringify(d.toObject()));
+          dObj[collection] = obj;
+          dObj[collection]['@id'] = obj._id;
+
+          xmlRoot.ele(dObj);
+        });
+
+        res.writeHead( 200, {'Content-Type': 'text/xml'} );
+        res.end( xmlRoot.end() );
+      } else {
+        res.json(data);
+      }
+    })
+    .onReject(function (reason){
+      res.statusCode = 404;
+      return res.send('Error 404: Requested data not found. Reason: '+reason.message);
+    });
+};
+
 
 var handlePost = function (req, res) {
   var doc = req.body,

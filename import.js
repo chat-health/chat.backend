@@ -1,3 +1,4 @@
+var _ = require('underscore');
 // grab information from user to be more specific
 var argv = require('optimist')
   .usage('Usage:\n\t$0 <collection to populate>')
@@ -47,21 +48,27 @@ console.info(optionspost);
 console.info('Do the POST calls');
 
 
-var reqPost = https.request(optionspost, function(res) {
-    console.log("statusCode: ", res.statusCode);
-    // uncomment it for header details
-    console.log("headers: ", res.headers);
+var array = JSON.parse(jsonObject);
 
-    res.on('data', function(d) {
-        console.info('POST result:\n');
-        process.stdout.write(d);
-        console.info('\n\nPOST completed');
+_.each(array, function(doc){
+    var reqPost = https.request(optionspost, function(res) {
+        console.log("statusCode: ", res.statusCode);
+        // uncomment it for header details
+        console.log("headers: ", res.headers);
+
+        res.on('data', function(d) {
+            console.info('POST result:\n');
+            process.stdout.write(d);
+            console.info('\n\nPOST completed');
+        });
+    });
+    
+    // write the json data
+    var jsonObj = JSON.stringify(doc);
+    reqPost.write(jsonObj);
+    reqPost.end();
+    reqPost.on('error', function(e) {
+        console.error(e);
     });
 });
 
-// write the json data
-reqPost.write(jsonObject);
-reqPost.end();
-reqPost.on('error', function(e) {
-    console.error(e);
-});
