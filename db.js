@@ -25,12 +25,12 @@ var storeObjIn = function (data, collection) {
       promise = Client.create(data);
     } else if (collection === "households") {
       promise = Household.create(data);
-    } else if (Service === "services") {
-      promise = Visit.create(data);
+    } else if (collection === "services") {
+      promise = Service.create(data);
     } else if (collection === "visits") {
       promise = Visit.create(data);
     } else if (collection === "workers") {
-      promise = Visit.create(data);
+      promise = Worker.create(data);
     } else {
       // No routing match so we return an error
       promise = new Promise();
@@ -50,12 +50,12 @@ var retrieveFromWhere = function (collection, where) {
     promise = Client.find(where).exec();
   } else if (collection === "households") {
     promise = Household.find(where).exec();
-  } else if (Service === "services") {
-    promise = Visit.find(where).exec();
+  } else if (collection === "services") {
+    promise = Service.find(where).exec();
   } else if (collection === "visits") {
     promise = Visit.find(where).exec();
   } else if (collection === "workers") {
-    promise = Visit.find(where).exec();
+    promise = Worker.find(where).exec();
   } else {
     // No routing match so we return an error
     promise = new Promise();
