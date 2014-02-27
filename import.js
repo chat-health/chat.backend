@@ -1,3 +1,4 @@
+var _ = require('underscore');
 // grab information from user to be more specific
 var argv = require('optimist')
   .usage('Usage:\n\t$0 <collection to populate>')
@@ -12,7 +13,7 @@ var fs = require('fs');
 var jsonObject;
 
 
-// To add a new COLLECTION please put in a if else that reads the json into jsonObject
+// To add a new COLLECTION please put in an if else that reads the json into jsonObject
 if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/services.json', 'utf8');
 } else if (COLLECTION === "clients") {
@@ -21,6 +22,20 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/workers.json', 'utf8');
 } else if (COLLECTION === "households") {
     jsonObject = fs.readFileSync('./test_data/households.json', 'utf8');
+} else if (COLLECTION === "health-themes") {
+    jsonObject = fs.readFileSync('./test_data/healthThemes.json', 'utf8');
+} else if (COLLECTION === "videos") {
+    jsonObject = fs.readFileSync('./test_data/videos.json', 'utf8');
+} else if (COLLECTION === "videos-accessed") {
+    jsonObject = fs.readFileSync('./test_data/videosAccessed.json', 'utf8');
+} else if (COLLECTION === "resources") {
+    jsonObject = fs.readFileSync('./test_data/resources.json', 'utf8');
+} else if (COLLECTION === "resources-accessed") {
+    jsonObject = fs.readFileSync('./test_data/resourcesAccessed.json', 'utf8');
+} else if (COLLECTION === "vaccines") {
+    jsonObject = fs.readFileSync('./test_data/vaccines.json', 'utf8');
+} else if (COLLECTION === "vaccines-recorded") {
+    jsonObject = fs.readFileSync('./test_data/vaccinesRecorded.json', 'utf8');
 } else {
     console.warn("A unknown collection <"+COLLECTION+"> was choosen.");
     console.error("Exit with error");
@@ -46,7 +61,6 @@ console.info('Options prepared:');
 console.info(optionspost);
 console.info('Do the POST calls');
 
-
 var reqPost = https.request(optionspost, function(res) {
     console.log("statusCode: ", res.statusCode);
     // uncomment it for header details
@@ -59,9 +73,13 @@ var reqPost = https.request(optionspost, function(res) {
     });
 });
 
-// write the json data
-reqPost.write(jsonObject);
-reqPost.end();
-reqPost.on('error', function(e) {
-    console.error(e);
+_.each(jsonObject, function(doc) {
+    // write the json data
+    reqPost.write(doc);
+    reqPost.end();
+    reqPost.on('error', function(e) {
+        console.error(e);
+    });
 });
+
+

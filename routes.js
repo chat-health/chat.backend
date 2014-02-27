@@ -68,7 +68,6 @@ module.exports = function (app) {
     handlePost(req, res);
   });
 
-
   app.get('/workers', function(req, res) {
     handleGet(req, res);
   });
@@ -76,8 +75,6 @@ module.exports = function (app) {
   app.post('/workers', function(req, res) {
     handlePost(req, res);
   });
-
-
 
   app.get('/services', function(req, res) {
     handleGet(req, res);
@@ -87,6 +84,40 @@ module.exports = function (app) {
     handlePost(req, res);
   });
 
+  app.get('/health-themes', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/health-themes', function(req, res) {
+    handlePost(req, res);
+  });
+
+  app.get('/videos', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/videos', function(req, res) {
+    handlePost(req, res);
+  });
+
+  app.get('/resources', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/resources', function(req, res) {
+    handlePost(req, res);
+  });
+
+  app.get('/vaccines', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/vaccines', function(req, res) {
+    handlePost(req, res);
+  });
+
+
+  
 
   // ************************* PUSH ******************************
 
@@ -105,6 +136,30 @@ module.exports = function (app) {
   });
 
   app.post('/attendance', function(req, res) {
+    handlePost(req, res);
+  });
+
+  app.get('/videos_accessed', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/videos_accessed', function(req, res) {
+    handlePost(req, res);
+  });
+
+  app.get('/resources_accessed', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/resources_accessed', function(req, res) {
+    handlePost(req, res);
+  });
+
+  app.get('/vaccines-recorded', function(req, res) {
+    handleGet(req, res);
+  });
+
+  app.post('/vaccines-recorded', function(req, res) {
     handlePost(req, res);
   });
 };
