@@ -61,25 +61,27 @@ console.info('Options prepared:');
 console.info(optionspost);
 console.info('Do the POST calls');
 
-var reqPost = https.request(optionspost, function(res) {
-    console.log("statusCode: ", res.statusCode);
-    // uncomment it for header details
-    console.log("headers: ", res.headers);
 
-    res.on('data', function(d) {
-        console.info('POST result:\n');
-        process.stdout.write(d);
-        console.info('\n\nPOST completed');
+var array = JSON.parse(jsonObject);
+
+_.each(array, function(doc){
+    var reqPost = https.request(optionspost, function(res) {
+        console.log("statusCode: ", res.statusCode);
+        // uncomment it for header details
+        console.log("headers: ", res.headers);
+
+        res.on('data', function(d) {
+            console.info('POST result:\n');
+            process.stdout.write(d);
+            console.info('\n\nPOST completed');
+        });
     });
-});
-
-_.each(jsonObject, function(doc) {
+    
     // write the json data
-    reqPost.write(doc);
+    var jsonObj = JSON.stringify(doc);
+    reqPost.write(jsonObj);
     reqPost.end();
     reqPost.on('error', function(e) {
         console.error(e);
     });
 });
-
-
