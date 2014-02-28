@@ -70,15 +70,15 @@ module.exports = function (app) {
   });
 
 
-  app.get('/health-themes', function(req, res) {
+  app.get('/health_themes', function(req, res) {
     handleGetAll(req, res, req.param('enc'));
   });
 
-  app.get('/health-themes/:id', function(req, res) {
+  app.get('/health_themes/:id', function(req, res) {
     handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
-  app.post('/health-themes', function(req, res) {
+  app.post('/health_themes', function(req, res) {
     handlePost(req, res);
   });
 
@@ -179,15 +179,15 @@ module.exports = function (app) {
   });
 
 
-  app.get('/vaccines-recorded', function(req, res) {
+  app.get('/vaccines_recorded', function(req, res) {
     handleGetAll(req, res, req.param('enc'));
   });
 
-  app.get('/vaccines-recorded/:id', function(req, res) {
+  app.get('/vaccines_recorded/:id', function(req, res) {
     handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
-  app.post('/vaccines-recorded', function(req, res) {
+  app.post('/vaccines_recorded', function(req, res) {
     handlePost(req, res);
   });
 };

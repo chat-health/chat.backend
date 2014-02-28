@@ -9,4 +9,4 @@ var HealthTheme = new mongoose.Schema({
   color: String
 }, { versionKey: false });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
-module.exports = mongoose.model('Vaccine', Vaccine);
+module.exports = mongoose.model('HealthTheme', HealthTheme);

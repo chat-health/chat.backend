@@ -22,19 +22,19 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/workers.json', 'utf8');
 } else if (COLLECTION === "households") {
     jsonObject = fs.readFileSync('./test_data/households.json', 'utf8');
-} else if (COLLECTION === "health-themes") {
+} else if (COLLECTION === "healthThemes") {
     jsonObject = fs.readFileSync('./test_data/healthThemes.json', 'utf8');
 } else if (COLLECTION === "videos") {
     jsonObject = fs.readFileSync('./test_data/videos.json', 'utf8');
-} else if (COLLECTION === "videos-accessed") {
+} else if (COLLECTION === "videosAccessed") {
     jsonObject = fs.readFileSync('./test_data/videosAccessed.json', 'utf8');
 } else if (COLLECTION === "resources") {
     jsonObject = fs.readFileSync('./test_data/resources.json', 'utf8');
-} else if (COLLECTION === "resources-accessed") {
+} else if (COLLECTION === "resourcesAccessed") {
     jsonObject = fs.readFileSync('./test_data/resourcesAccessed.json', 'utf8');
 } else if (COLLECTION === "vaccines") {
     jsonObject = fs.readFileSync('./test_data/vaccines.json', 'utf8');
-} else if (COLLECTION === "vaccines-recorded") {
+} else if (COLLECTION === "vaccinesRecorded") {
     jsonObject = fs.readFileSync('./test_data/vaccinesRecorded.json', 'utf8');
 } else {
     console.warn("A unknown collection <"+COLLECTION+"> was choosen.");
