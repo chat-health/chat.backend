@@ -13,6 +13,7 @@ var Video = require('./models/video');
 var VideoAccessed = require('./models/videoAccessed');
 var Resource = require('./models/resource');
 var ResourceAccessed = require('./models/resourceAccessed');
+var PageAssessment1 = require('./models/pageAssessment1');
 var Vaccine = require('./models/vaccine');
 var VaccineRecorded = require('./models/vaccineRecorded');
   
@@ -48,6 +49,8 @@ var storeObjIn = function (data, collection) {
       promise = Resource.create(data);
     } else if (collection === "resources_accessed") {
       promise = ResourceAccessed.create(data);
+    } else if (collection === "page_assessment1") {
+      promise = PageAssessment1.create(data);
     } else if (collection === "vaccines") {
       promise = Vaccine.create(data);
     } else if (collection === "vaccines_recorded") {
@@ -87,6 +90,8 @@ var retrieveFromWhere = function (collection, where) {
     promise = Resource.find().exec();
   } else if (collection === "resources_accessed") {
     promise = ResourceAccessed.find().exec();
+  } else if (collection === "page_assessment1") {
+    promise = PageAssessment1.find().exec();
   } else if (collection === "vaccines") {
     promise = Vaccine.find().exec();
   } else if (collection === "vaccines_recorded") {
@@ -117,6 +122,7 @@ module.exports = {
   VideoAccessed: VideoAccessed,
   Resource: Resource,
   ResourceAccessed: ResourceAccessed,
+  PageAssessment1: PageAssessment1,
   Vaccine: Vaccine,
   VaccineRecorded: VaccineRecorded,
   storeObjIn: storeObjIn,

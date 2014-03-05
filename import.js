@@ -22,19 +22,21 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/workers.json', 'utf8');
 } else if (COLLECTION === "households") {
     jsonObject = fs.readFileSync('./test_data/households.json', 'utf8');
-} else if (COLLECTION === "healthThemes") {
+} else if (COLLECTION === "health_themes") {
     jsonObject = fs.readFileSync('./test_data/healthThemes.json', 'utf8');
 } else if (COLLECTION === "videos") {
     jsonObject = fs.readFileSync('./test_data/videos.json', 'utf8');
-} else if (COLLECTION === "videosAccessed") {
+} else if (COLLECTION === "videos_accessed") {
     jsonObject = fs.readFileSync('./test_data/videosAccessed.json', 'utf8');
 } else if (COLLECTION === "resources") {
     jsonObject = fs.readFileSync('./test_data/resources.json', 'utf8');
-} else if (COLLECTION === "resourcesAccessed") {
+} else if (COLLECTION === "resources_accessed") {
     jsonObject = fs.readFileSync('./test_data/resourcesAccessed.json', 'utf8');
+} else if (COLLECTION === "page_assessment1") {
+    jsonObject = fs.readFileSync('./test_data/pageAssessment1.json', 'utf8');
 } else if (COLLECTION === "vaccines") {
     jsonObject = fs.readFileSync('./test_data/vaccines.json', 'utf8');
-} else if (COLLECTION === "vaccinesRecorded") {
+} else if (COLLECTION === "vaccines_recorded") {
     jsonObject = fs.readFileSync('./test_data/vaccinesRecorded.json', 'utf8');
 } else {
     console.warn("A unknown collection <"+COLLECTION+"> was choosen.");
