@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "express": "*",
+    "everyauth": "*",
+    "connect": "*",
     "underscore": "*",
     "mpromise": "*",
     "mongoose": "*",
