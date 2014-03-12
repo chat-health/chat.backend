@@ -32,6 +32,8 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/resources.json', 'utf8');
 } else if (COLLECTION === "resources_accessed") {
     jsonObject = fs.readFileSync('./test_data/resourcesAccessed.json', 'utf8');
+} else if (COLLECTION === "health_selects") {
+    jsonObject = fs.readFileSync('./test_data/healthSelects.json', 'utf8');
 } else if (COLLECTION === "page_assessment1") {
     jsonObject = fs.readFileSync('./test_data/pageAssessment1.json', 'utf8');
 } else if (COLLECTION === "vaccines") {

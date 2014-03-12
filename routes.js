@@ -109,6 +109,19 @@ module.exports = function (app) {
   });
 
 
+  app.get('/health_selects', function(req, res) {
+    handleGetAll(req, res, req.param('enc'));
+  });
+
+  app.get('/health_selects/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/health_selects', function(req, res) {
+    handlePost(req, res);
+  });
+
+
   app.get('/page_assessment1', function(req, res) {
     handleGetAll(req, res, req.param('enc'));
   });
