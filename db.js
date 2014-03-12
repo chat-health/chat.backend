@@ -14,7 +14,7 @@ var VideoAccessed = require('./models/videoAccessed');
 var Resource = require('./models/resource');
 var ResourceAccessed = require('./models/resourceAccessed');
 
-var HealthSelect = require('./models/HealthSelect');
+var HealthSelect = require('./models/healthSelect');
 
 var PageAssessment1 = require('./models/pageAssessment1');
 var Vaccine = require('./models/vaccine');
