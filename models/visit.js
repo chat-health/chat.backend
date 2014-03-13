@@ -3,7 +3,6 @@ var Visit = new mongoose.Schema({
   _id : Number,
   worker_id : Number,
   role: String,
-  date: Date,
   hh_id: Number,
   lat: Number,
   lon: Number,
