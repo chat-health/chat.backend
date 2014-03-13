@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var https = require('https');
 // XML capability
 var builder = require('xmlbuilder');
 
@@ -15,6 +16,11 @@ module.exports = function (app) {
   app.get('/', function(req, res) {
     res.type('text/plain');
     res.send('This will be the API used by the CHAT Android app for data syncing.\n Add /workers to retrieve all worker records. More to come');
+
+    var googleToken = req.param('google_auth_token');
+
+    verfiyGoogleToken(googleToken);
+
   });
 
 
@@ -287,4 +293,39 @@ var handlePost = function (req, res) {
       res.statusCode = 404;
       return res.send(reason.message);
     });
+};
+
+var verfiyGoogleToken = function (google_token) {
+  // options for GET
+  var optionsget = {
+      host : 'www.googleapis.com', // here only the domain name
+      // (no http/https !)
+      port : 443,
+      path : '/oauth2/v1/userinfo?access_token='+google_token, // the rest of the url with parameters if needed
+      method : 'GET' // do GET
+  };
+   
+  console.info('Options prepared:');
+  console.info(optionsget);
+  console.info('Do the GET call');
+   
+  // do the GET request
+  var reqGet = https.request(optionsget, function(res) {
+      console.log("statusCode: ", res.statusCode);
+      // uncomment it for header details
+  //  console.log("headers: ", res.headers);
+   
+   
+      res.on('data', function(d) {
+          console.info('GET result:\n');
+          process.stdout.write(d);
+          console.info('\n\nCall completed');
+      });
+   
+  });
+   
+  reqGet.end();
+  reqGet.on('error', function(e) {
+      console.error(e);
+  });
 };
