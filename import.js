@@ -68,6 +68,8 @@ console.info('Do the POST calls');
 
 var array = JSON.parse(jsonObject);
 
+var date = new Date();
+
 _.each(array, function(doc){
     var reqPost = https.request(optionspost, function(res) {
         console.log("statusCode: ", res.statusCode);
@@ -80,6 +82,10 @@ _.each(array, function(doc){
             console.info('\n\nPOST completed');
         });
     });
+
+    // set current dates (created_at and modified_at)
+    doc.created_at = date;
+    doc.modified_at = date;
     
     // write the json data
     var jsonObj = JSON.stringify(doc);
