@@ -86,23 +86,23 @@ var retrieveFromWhere = function (collection, where) {
   } else if (collection === "workers") {
     promise = Worker.find(where).exec();
   } else if (collection === "health_themes") {
-    promise = HealthTheme.find().exec();
+    promise = HealthTheme.find(where).exec();
   } else if (collection === "videos") {
-    promise = Video.find().exec();
+    promise = Video.find(where).exec();
   } else if (collection === "videos_accessed") {
-    promise = VideoAccessed.find().exec();
+    promise = VideoAccessed.find(where).exec();
   } else if (collection === "resources") {
-    promise = Resource.find().exec();
+    promise = Resource.find(where).exec();
   } else if (collection === "resources_accessed") {
-    promise = ResourceAccessed.find().exec();
+    promise = ResourceAccessed.find(where).exec();
   } else if (collection === "health_selects") {
-    promise = HealthSelect.find().exec();
+    promise = HealthSelect.find(where).exec();
   } else if (collection === "page_assessment1") {
-    promise = PageAssessment1.find().exec();
+    promise = PageAssessment1.find(where).exec();
   } else if (collection === "vaccines") {
-    promise = Vaccine.find().exec();
+    promise = Vaccine.find(where).exec();
   } else if (collection === "vaccines_recorded") {
-    promise = VaccineRecorded.find().exec();
+    promise = VaccineRecorded.find(where).exec();
   } else {
     // No routing match so we return an error
     promise = new Promise();

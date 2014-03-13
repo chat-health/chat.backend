@@ -85,7 +85,9 @@ _.each(array, function(doc){
 
     // set current dates (created_at and modified_at)
     doc.created_at = date;
-    doc.modified_at = date;
+    if (!doc.modified_at) {
+        doc.modified_at = date;
+    }
     
     // write the json data
     var jsonObj = JSON.stringify(doc);

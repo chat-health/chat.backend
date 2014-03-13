@@ -71,7 +71,9 @@ module.exports = function (app) {
 
 
   app.get('/health_themes', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    var last_synced_at = new Date(req.param('last_synced_at'));
+
+    handleGetAll(req, res, req.param('enc'), last_synced_at);
   });
 
   app.get('/health_themes/:id', function(req, res) {
@@ -220,11 +222,18 @@ module.exports = function (app) {
 
 
 // ========== Helper function that do the work ;) ===============================
-var handleGetAll = function (req, res, encoding) {
+var handleGetAll = function (req, res, encoding, last_synced_at) {
   var collection = req.route.path.substring(1,req.route.path.length);
-  // var collection = route
+  var where = {};
 
-  db.retrieveAllFrom (collection)
+  // We want to be able to only retrieve objects with modified_at date being newer
+  // than the date given to us via the get 'last_synced_at' parameter
+  // {modified_at: {$gt: new Date(2014, 10, 7)}}
+  if (last_synced_at && (last_synced_at instanceof Date)) {
+    where = {modified_at: {$gt: last_synced_at}};
+  }
+
+  db.retrieveFromWhere (collection, where)
     .onFulfill(function (data) {
       if (encoding === "xml") {
         var xmlRoot = builder.create(collection);
