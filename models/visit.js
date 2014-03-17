@@ -8,8 +8,7 @@ var Visit = new mongoose.Schema({
   lon: Number,
   start_time: Date,
   end_time: Date,
-  type: String,
-  dirty: Boolean
+  type: String
 }, { versionKey: false });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
 module.exports = mongoose.model('Visit', Visit);
