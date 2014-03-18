@@ -165,9 +165,15 @@ module.exports = function (app) {
     handlePost(req, res);
   });
 
+
+  // TODO: Colin we need to decide how we put. Proper would be /collection/id
   app.put('/visits', function(req, res) {
     handlePut(req, res);
   });
+  // like so
+  // app.put('/visits/:id', function(req, res) {
+  //   handlePut(req, res);
+  // });
 
 
   app.get('/attendance', function(req, res) {
