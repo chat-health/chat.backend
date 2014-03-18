@@ -30,42 +30,7 @@ var storeObjIn = function (data, collection) {
     promise.reject(new mongoose.Error("Error: Please don't post multiple documents in an array!"));
   } else {
     var model = getModelFor(collection);
-    // If we only got a object we try to create a document in the DB and return a promise
-    // if (collection === "attendance") {
-    //   promise = Attendance.create(data);
-    // } else if (collection === "clients") {
-    //   promise = Client.create(data);
-    // } else if (collection === "households") {
-    //   promise = Household.create(data);
-    // } else if (collection === "services") {
-    //   promise = Service.create(data);
-    // } else if (collection === "visits") {
-    //   promise = Visit.create(data);
-    // } else if (collection === "workers") {
-    //   promise = Worker.create(data);
-    // } else if (collection === "health_themes") {
-    //   promise = HealthTheme.create(data);
-    // } else if (collection === "videos") {
-    //   promise = Video.create(data);
-    // } else if (collection === "videos_accessed") {
-    //   promise = VideoAccessed.create(data);
-    // } else if (collection === "resources") {
-    //   promise = Resource.create(data);
-    // } else if (collection === "resources_accessed") {
-    //   promise = ResourceAccessed.create(data);
-    // } else if (collection === "health_selects") {
-    //   promise = HealthSelect.create(data);
-    // } else if (collection === "page_assessment1") {
-    //   promise = PageAssessment1.create(data);
-    // } else if (collection === "vaccines") {
-    //   promise = Vaccine.create(data);
-    // } else if (collection === "vaccines_recorded") {
-    //   promise = VaccineRecorded.create(data);
-    // } else {
-    //   // No routing match so we return an error
-    //   promise = new Promise();
-    //   promise.reject(new mongoose.Error("Error: Can't store data for collection: "+collection));
-    // }
+
     if (model) {
       promise = model.create(data);
     } else {
@@ -86,6 +51,7 @@ var updateDocument = function (collection, data) {
   // Delete _id since that would mess up update
   delete data._id;
 
+  // update statement
   var set = { $set: data}
 
   if (model) {
@@ -103,41 +69,6 @@ var retrieveFromWhere = function (collection, where) {
   var promise;
   var model = getModelFor(collection);
 
-  // if (collection === "attendance") {
-  //   promise = Attendance.find(where).exec();
-  // } else if (collection === "clients") {
-  //   promise = Client.find(where).exec();
-  // } else if (collection === "households") {
-  //   promise = Household.find(where).exec();
-  // } else if (collection === "services") {
-  //   promise = Service.find(where).exec();
-  // } else if (collection === "visits") {
-  //   promise = Visit.find(where).exec();
-  // } else if (collection === "workers") {
-  //   promise = Worker.find(where).exec();
-  // } else if (collection === "health_themes") {
-  //   promise = HealthTheme.find(where).exec();
-  // } else if (collection === "videos") {
-  //   promise = Video.find(where).exec();
-  // } else if (collection === "videos_accessed") {
-  //   promise = VideoAccessed.find(where).exec();
-  // } else if (collection === "resources") {
-  //   promise = Resource.find(where).exec();
-  // } else if (collection === "resources_accessed") {
-  //   promise = ResourceAccessed.find(where).exec();
-  // } else if (collection === "health_selects") {
-  //   promise = HealthSelect.find(where).exec();
-  // } else if (collection === "page_assessment1") {
-  //   promise = PageAssessment1.find(where).exec();
-  // } else if (collection === "vaccines") {
-  //   promise = Vaccine.find(where).exec();
-  // } else if (collection === "vaccines_recorded") {
-  //   promise = VaccineRecorded.find(where).exec();
-  // } else {
-  //   // No routing match so we return an error
-  //   promise = new Promise();
-  //   promise.reject(new mongoose.Error("Error: Can't retrieve data for collection: "+collection));
-  // }
   if (model) {
     promise = model.find(where).exec();
   } else {
