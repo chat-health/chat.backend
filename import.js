@@ -17,13 +17,15 @@ var jsonObject;
 if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/services.json', 'utf8');
 } else if (COLLECTION === "clients") {
-    jsonObject = fs.readFileSync('./test_data/clients.json', 'utf8');    
+    jsonObject = fs.readFileSync('./test_data/clients.json', 'utf8');
 } else if (COLLECTION === "workers") {
     jsonObject = fs.readFileSync('./test_data/workers.json', 'utf8');
 } else if (COLLECTION === "households") {
     jsonObject = fs.readFileSync('./test_data/households.json', 'utf8');
 } else if (COLLECTION === "health_themes") {
     jsonObject = fs.readFileSync('./test_data/healthThemes.json', 'utf8');
+} else if (COLLECTION === "health_topics") {
+    jsonObject = fs.readFileSync('./test_data/healthTopics.json', 'utf8');
 } else if (COLLECTION === "videos") {
     jsonObject = fs.readFileSync('./test_data/videos.json', 'utf8');
 } else if (COLLECTION === "videos_accessed") {
@@ -88,7 +90,7 @@ _.each(array, function(doc){
     if (!doc.modified_at) {
         doc.modified_at = date;
     }
-    
+
     // write the json data
     var jsonObj = JSON.stringify(doc);
     reqPost.write(jsonObj);

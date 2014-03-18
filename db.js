@@ -9,6 +9,7 @@ var Service = require('./models/service');
 var Visit = require('./models/visit');
 var Worker = require('./models/worker');
 var HealthTheme = require('./models/healthTheme');
+var HealthTopic = require('./models/healthTopic');
 var Video = require('./models/video');
 var VideoAccessed = require('./models/videoAccessed');
 var Resource = require('./models/resource');
@@ -52,7 +53,7 @@ var updateDocument = function (collection, data) {
   delete data._id;
 
   // update statement
-  var set = { $set: data}
+  var set = { $set: data };
 
   if (model) {
     promise = model.update(where, set).exec();
@@ -101,6 +102,8 @@ var getModelFor = function(collection) {
     model = Worker;
   } else if (collection === "health_themes") {
     model = HealthTheme;
+  } else if (collection === "health_topics") {
+    model = HealthTopic;
   } else if (collection === "videos") {
     model = Video;
   } else if (collection === "videos_accessed") {
@@ -112,7 +115,7 @@ var getModelFor = function(collection) {
   } else if (collection === "health_selects") {
     model = HealthSelect;
   } else if (collection === "page_assessment1") {
-    model = PageAssessment1.find(where).exec();
+    model = PageAssessment1;
   } else if (collection === "vaccines") {
     model = Vaccine;
   } else if (collection === "vaccines_recorded") {
@@ -132,6 +135,7 @@ module.exports = {
   Visit: Visit,
   Worker: Worker,
   HealthTheme: HealthTheme,
+  HealthTopic: HealthTopic,
   Video: Video,
   VideoAccessed: VideoAccessed,
   Resource: Resource,

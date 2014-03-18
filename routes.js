@@ -83,6 +83,19 @@ module.exports = function (app) {
   });
 
 
+  app.get('/health_topics', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/health_topics/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/health_topics', function(req, res) {
+    handlePost(req, res);
+  });
+
+
   app.get('/videos', function(req, res) {
     handleGetAll(req, res);
   });
