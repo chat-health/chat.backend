@@ -19,7 +19,7 @@ module.exports = function (app) {
 
 
   app.get('/clients', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/clients/:id', function(req, res) {
@@ -32,7 +32,7 @@ module.exports = function (app) {
 
 
   app.get('/households', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/households/:id', function(req, res) {
@@ -45,7 +45,7 @@ module.exports = function (app) {
 
 
   app.get('/workers', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/workers/:id', function(req, res) {
@@ -58,7 +58,7 @@ module.exports = function (app) {
 
 
   app.get('/services', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/services/:id', function(req, res) {
@@ -71,9 +71,7 @@ module.exports = function (app) {
 
 
   app.get('/health_themes', function(req, res) {
-    var last_synced_at = new Date(req.param('last_synced_at'));
-
-    handleGetAll(req, res, req.param('enc'), last_synced_at);
+    handleGetAll(req, res);
   });
 
   app.get('/health_themes/:id', function(req, res) {
@@ -86,7 +84,7 @@ module.exports = function (app) {
 
 
   app.get('/videos', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/videos/:id', function(req, res) {
@@ -99,7 +97,7 @@ module.exports = function (app) {
 
 
   app.get('/resources', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/resources/:id', function(req, res) {
@@ -112,7 +110,7 @@ module.exports = function (app) {
 
 
   app.get('/health_selects', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/health_selects/:id', function(req, res) {
@@ -125,7 +123,7 @@ module.exports = function (app) {
 
 
   app.get('/page_assessment1', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/page_assessment1/:id', function(req, res) {
@@ -138,7 +136,7 @@ module.exports = function (app) {
 
 
   app.get('/vaccines', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/vaccines/:id', function(req, res) {
@@ -150,13 +148,13 @@ module.exports = function (app) {
   });
 
 
-  
+
 
   // ************************* PUSH ******************************
 
 
   app.get('/visits', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/visits/:id', function(req, res) {
@@ -167,9 +165,13 @@ module.exports = function (app) {
     handlePost(req, res);
   });
 
+  app.put('/visits', function(req, res) {
+    handlePut(req, res);
+  });
+
 
   app.get('/attendance', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/attendance/:id', function(req, res) {
@@ -182,7 +184,7 @@ module.exports = function (app) {
 
 
   app.get('/videos_accessed', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/videos_accessed/:id', function(req, res) {
@@ -195,7 +197,7 @@ module.exports = function (app) {
 
 
   app.get('/resources_accessed', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/resources_accessed/:id', function(req, res) {
@@ -208,7 +210,7 @@ module.exports = function (app) {
 
 
   app.get('/vaccines_recorded', function(req, res) {
-    handleGetAll(req, res, req.param('enc'));
+    handleGetAll(req, res);
   });
 
   app.get('/vaccines_recorded/:id', function(req, res) {
@@ -222,15 +224,20 @@ module.exports = function (app) {
 
 
 // ========== Helper function that do the work ;) ===============================
-var handleGetAll = function (req, res, encoding, last_synced_at) {
+var handleGetAll = function (req, res) {
   var collection = req.route.path.substring(1,req.route.path.length);
   var where = {};
+  var last_synced_at = null;
+  var encoding = req.param('enc');
 
-  // We want to be able to only retrieve objects with modified_at date being newer
-  // than the date given to us via the get 'last_synced_at' parameter
-  // {modified_at: {$gt: new Date(2014, 10, 7)}}
-  if (last_synced_at && (last_synced_at instanceof Date)) {
-    where = {modified_at: {$gt: last_synced_at}};
+  if (req.param('last_synced_at')) {
+    last_synced_at = new Date(req.param('last_synced_at'));
+    // We want to be able to only retrieve objects with modified_at date being newer
+    // than the date given to us via the get 'last_synced_at' parameter
+    // {modified_at: {$gt: new Date(2014, 10, 7)}}
+    if (last_synced_at && (last_synced_at instanceof Date)) {
+      where = {modified_at: {$gt: last_synced_at}};
+    }
   }
 
   db.retrieveFromWhere (collection, where)
@@ -293,6 +300,20 @@ var handleGetByID = function (req, res, id, encoding) {
     .onReject(function (reason){
       res.statusCode = 404;
       return res.send('Error 404: Requested data not found. Reason: '+reason.message);
+    });
+};
+
+var handlePut = function (req, res) {
+  var doc = req.body,
+      collection = req.route.path.substring(1,req.route.path.length);
+
+  db.updateDocument(collection, doc)
+    .onFulfill(function (document) {
+      return res.json(true);
+    })
+    .onReject(function(reason) {
+      res.statusCode = 404;
+      return res.send(reason.message);
     });
 };
 
