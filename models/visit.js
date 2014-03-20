@@ -10,7 +10,7 @@ var Visit = new mongoose.Schema({
   end_time: Date,
   type: String,
   attendance: Array,
-  videos_accessed Array
+  videos_accessed: Array
 }, { versionKey: false });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
 module.exports = mongoose.model('Visit', Visit);
