@@ -4,6 +4,6 @@ var VaccineRecorded = new mongoose.Schema({
   client_id : Number,
   visit_id : Number,
   date : String
-}, { versionKey: false });
+}, { versionKey: false, collection: 'vaccines_recorded' });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
-module.exports = mongoose.model('vaccine_recorded', VaccineRecorded);
+module.exports = mongoose.model('vaccines_recorded', VaccineRecorded);
