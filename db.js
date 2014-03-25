@@ -6,6 +6,7 @@ var Attendance = require('./models/attendance');
 var Client = require('./models/client');
 var Household = require('./models/household');
 var Service = require('./models/service');
+var ServiceAccessed = require('./models/serviceAccessed');
 var Visit = require('./models/visit');
 var Worker = require('./models/worker');
 var HealthTheme = require('./models/healthTheme');
@@ -96,6 +97,8 @@ var getModelFor = function(collection) {
     model = Household;
   } else if (collection === "services") {
     model = Service;
+  } else if (collection === "services_accessed") {
+    model = ServiceAccessed;
   } else if (collection === "visits") {
     model = Visit;
   } else if (collection === "workers") {
@@ -132,6 +135,7 @@ module.exports = {
   Client: Client,
   Household: Household,
   Service: Service,
+  ServiceAccessed: ServiceAccessed,
   Visit: Visit,
   Worker: Worker,
   HealthTheme: HealthTheme,

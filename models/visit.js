@@ -13,8 +13,8 @@ var Visit = new mongoose.Schema({
   videos_accessed: Array,
   health_topics_accessed: Array,
   health_selects_recorded: Array,
-  cha_accessed: Array,
-  vaccines_recorded: Array
+  cha_accessed: Array
+  // vaccines_recorded: Array,
 
 }, { versionKey: false });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide

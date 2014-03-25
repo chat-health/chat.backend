@@ -189,43 +189,56 @@ module.exports = function (app) {
   // });
 
 
-  app.get('/attendance', function(req, res) {
+  // app.get('/attendance', function(req, res) {
+  //   handleGetAll(req, res);
+  // });
+
+  // app.get('/attendance/:id', function(req, res) {
+  //   handleGetByID(req, res, req.params.id, req.param('enc'));
+  // });
+
+  // app.post('/attendance', function(req, res) {
+  //   handlePost(req, res);
+  // });
+
+
+  app.get('/services_accessed', function(req, res) {
     handleGetAll(req, res);
   });
 
-  app.get('/attendance/:id', function(req, res) {
+  app.get('/services_accessed/:id', function(req, res) {
     handleGetByID(req, res, req.params.id, req.param('enc'));
   });
 
-  app.post('/attendance', function(req, res) {
+  app.post('/services_accessed', function(req, res) {
     handlePost(req, res);
   });
 
 
-  app.get('/videos_accessed', function(req, res) {
-    handleGetAll(req, res);
-  });
+  // app.get('/videos_accessed', function(req, res) {
+  //   handleGetAll(req, res);
+  // });
 
-  app.get('/videos_accessed/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
-  });
+  // app.get('/videos_accessed/:id', function(req, res) {
+  //   handleGetByID(req, res, req.params.id, req.param('enc'));
+  // });
 
-  app.post('/videos_accessed', function(req, res) {
-    handlePost(req, res);
-  });
+  // app.post('/videos_accessed', function(req, res) {
+  //   handlePost(req, res);
+  // });
 
 
-  app.get('/resources_accessed', function(req, res) {
-    handleGetAll(req, res);
-  });
+  // app.get('/resources_accessed', function(req, res) {
+  //   handleGetAll(req, res);
+  // });
 
-  app.get('/resources_accessed/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
-  });
+  // app.get('/resources_accessed/:id', function(req, res) {
+  //   handleGetByID(req, res, req.params.id, req.param('enc'));
+  // });
 
-  app.post('/resources_accessed', function(req, res) {
-    handlePost(req, res);
-  });
+  // app.post('/resources_accessed', function(req, res) {
+  //   handlePost(req, res);
+  // });
 
 
   app.get('/vaccines_recorded', function(req, res) {
