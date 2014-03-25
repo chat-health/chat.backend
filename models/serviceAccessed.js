@@ -6,6 +6,6 @@ var ServiceAccessed = new mongoose.Schema({
   client_id : Number,
   ad_info : String,
   date : Date
-}, { versionKey: false });
+}, { versionKey: false, collection: 'services_accessed' });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
 module.exports = mongoose.model('service_accessed', ServiceAccessed);
