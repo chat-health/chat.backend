@@ -228,17 +228,17 @@ module.exports = function (app) {
   // });
 
 
-  // app.get('/resources_accessed', function(req, res) {
-  //   handleGetAll(req, res);
-  // });
+  app.get('/resources_accessed', function(req, res) {
+    handleGetAll(req, res);
+  });
 
-  // app.get('/resources_accessed/:id', function(req, res) {
-  //   handleGetByID(req, res, req.params.id, req.param('enc'));
-  // });
+  app.get('/resources_accessed/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
 
-  // app.post('/resources_accessed', function(req, res) {
-  //   handlePost(req, res);
-  // });
+  app.post('/resources_accessed', function(req, res) {
+    handlePost(req, res);
+  });
 
 
   app.get('/vaccines_recorded', function(req, res) {
