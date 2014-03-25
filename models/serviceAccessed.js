@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var ServiceAccessed = new mongoose.Schema({
+  _id : Number,
   service_id : Number,
   visit_id : Number,
   client_id : Number,
