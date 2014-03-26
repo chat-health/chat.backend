@@ -4,7 +4,9 @@ var Vaccine = new mongoose.Schema({
   age : String,
   display_age : String,
   short_name : String,
-  long_name : String
+  long_name : String,
+  created_at: Date,
+  modified_at: Date
 }, { versionKey: false });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
 module.exports = mongoose.model('Vaccine', Vaccine);
