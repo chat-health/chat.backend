@@ -11,6 +11,7 @@ var Visit = require('./models/visit');
 var Worker = require('./models/worker');
 var HealthTheme = require('./models/healthTheme');
 var HealthTopic = require('./models/healthTopic');
+var HealthTopicAccessed = require('./models/healthTopicAccessed');
 var Video = require('./models/video');
 var VideoAccessed = require('./models/videoAccessed');
 var Resource = require('./models/resource');
@@ -107,6 +108,8 @@ var getModelFor = function(collection) {
     model = HealthTheme;
   } else if (collection === "health_topics") {
     model = HealthTopic;
+  } else if (collection === "health_topics_accessed") {
+    model = HealthTopicAccessed;
   } else if (collection === "videos") {
     model = Video;
   } else if (collection === "videos_accessed") {
@@ -140,6 +143,7 @@ module.exports = {
   Worker: Worker,
   HealthTheme: HealthTheme,
   HealthTopic: HealthTopic,
+  HealthTopicAccessed: HealthTopicAccessed,
   Video: Video,
   VideoAccessed: VideoAccessed,
   Resource: Resource,
