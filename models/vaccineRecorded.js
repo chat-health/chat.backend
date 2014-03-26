@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var VaccineRecorded = new mongoose.Schema({
+  _id: Number,
   vaccine_id : Number,
   client_id : Number,
   visit_id : Number,
