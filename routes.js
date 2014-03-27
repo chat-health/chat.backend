@@ -122,6 +122,19 @@ module.exports = function (app) {
   });
 
 
+  app.get('/health_pages', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/health_pages/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/health_pages', function(req, res) {
+    handlePost(req, res);
+  });
+
+
   app.get('/health_selects', function(req, res) {
     handleGetAll(req, res);
   });
@@ -131,6 +144,58 @@ module.exports = function (app) {
   });
 
   app.post('/health_selects', function(req, res) {
+    handlePost(req, res);
+  });
+
+
+  app.get('/topic_videos', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/topic_videos/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/topic_videos', function(req, res) {
+    handlePost(req, res);
+  });
+
+
+  app.get('/page_text1', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/page_text1/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/page_text1', function(req, res) {
+    handlePost(req, res);
+  });
+
+
+  app.get('/page_select1', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/page_select1/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/page_select1', function(req, res) {
+    handlePost(req, res);
+  });
+
+
+  app.get('/page_video1', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/page_video1/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/page_video1', function(req, res) {
     handlePost(req, res);
   });
 
@@ -226,6 +291,7 @@ module.exports = function (app) {
   app.post('/health_topics_accessed', function(req, res) {
     handlePost(req, res);
   });
+
 
   app.get('/vaccines_recorded', function(req, res) {
     handleGetAll(req, res);

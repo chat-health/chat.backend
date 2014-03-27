@@ -17,9 +17,14 @@ var VideoAccessed = require('./models/videoAccessed');
 var Resource = require('./models/resource');
 var ResourceAccessed = require('./models/resourceAccessed');
 
+var HealthPage = require('./models/healthPage');
 var HealthSelect = require('./models/healthSelect');
-
+var TopicVideo = require('./models/topicVideo');
+var PageText1 = require('./models/pageText1');
+var PageSelect1 = require('./models/pageSelect1');
+var PageVideo1 = require('./models/pageVideo1');
 var PageAssessment1 = require('./models/pageAssessment1');
+
 var Vaccine = require('./models/vaccine');
 var VaccineRecorded = require('./models/vaccineRecorded');
 
@@ -118,8 +123,18 @@ var getModelFor = function(collection) {
     model = Resource;
   } else if (collection === "resources_accessed") {
     model = ResourceAccessed;
+  } else if (collection === "health_pages") {
+    model = HealthPage;
   } else if (collection === "health_selects") {
     model = HealthSelect;
+  } else if (collection === "topic_videos") {
+    model = TopicVideo;
+  } else if (collection === "page_text1") {
+    model = PageText1;
+  } else if (collection === "page_select1") {
+    model = PageSelect1;
+  } else if (collection === "page_video1") {
+    model = PageVideo1;
   } else if (collection === "page_assessment1") {
     model = PageAssessment1;
   } else if (collection === "vaccines") {
@@ -148,7 +163,12 @@ module.exports = {
   VideoAccessed: VideoAccessed,
   Resource: Resource,
   ResourceAccessed: ResourceAccessed,
+  HealthPage: HealthPage,
   HealthSelect: HealthSelect,
+  TopicVideo: TopicVideo,
+  PageText1: PageText1,
+  PageSelect1: PageSelect1,
+  PageVideo1: PageVideo1,
   PageAssessment1: PageAssessment1,
   Vaccine: Vaccine,
   VaccineRecorded: VaccineRecorded,

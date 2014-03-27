@@ -34,8 +34,18 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/resources.json', 'utf8');
 } else if (COLLECTION === "resources_accessed") {
     jsonObject = fs.readFileSync('./test_data/resourcesAccessed.json', 'utf8');
+} else if (COLLECTION === "health_pages") {
+    jsonObject = fs.readFileSync('./test_data/healthPages.json', 'utf8');
 } else if (COLLECTION === "health_selects") {
     jsonObject = fs.readFileSync('./test_data/healthSelects.json', 'utf8');
+} else if (COLLECTION === "topic_videos") {
+    jsonObject = fs.readFileSync('./test_data/topicVideos.json', 'utf8');
+} else if (COLLECTION === "page_text1") {
+    jsonObject = fs.readFileSync('./test_data/pageText1.json', 'utf8');
+} else if (COLLECTION === "page_select1") {
+    jsonObject = fs.readFileSync('./test_data/pageSelect1.json', 'utf8');
+} else if (COLLECTION === "page_video1") {
+    jsonObject = fs.readFileSync('./test_data/pageVideo1.json', 'utf8');
 } else if (COLLECTION === "page_assessment1") {
     jsonObject = fs.readFileSync('./test_data/pageAssessment1.json', 'utf8');
 } else if (COLLECTION === "vaccines") {
