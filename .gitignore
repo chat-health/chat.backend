@@ -19,4 +19,4 @@ node_modules
 chattunnel.sh
 schema.mwb.bak
 
-import_data/*
+test_data/
