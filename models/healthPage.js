@@ -4,7 +4,7 @@ var HealthPage = new mongoose.Schema({
   topic_id : Number,
   page_number : Number,
   type : String,
-  content_page_id : Number,
+  page_content_id : Number,
   created_at: Date,
   modified_at: Date
 }, { versionKey: false });

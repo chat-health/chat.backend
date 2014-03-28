@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 var PageVideo1 = new mongoose.Schema({
   _id : Number,
-  en_content1 : String,
-  zu_content1 : String,
+  en_content : String,
+  zu_content : String,
   created_at: Date,
   modified_at: Date
 }, { versionKey: false });
