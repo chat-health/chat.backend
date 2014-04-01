@@ -5,7 +5,7 @@ var builder = require('xmlbuilder');
 
 // Division of labour inspired by this article
 // https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
-var db = require('./db');
+//var db = require('./db');
 // var regex = /\/.*?\//;
 var regex = /\/([^\/]*)\//;
 var regexXml = /\/([^\/]*)\./;
@@ -17,13 +17,18 @@ module.exports = function (app) {
     res.type('text/plain');
     res.send('This will be the API used by the CHAT Android app for data syncing.\n Add /workers to retrieve all worker records. More to come');
 
-    var googleToken = req.param('google_auth_token');
+//    var googleToken = req.param('google_auth_token');
 
-    verfiyGoogleToken(googleToken);
+    //verfiyGoogleToken(googleToken);
 
   });
+  
+  app.get('/test', function(req, res) {
+    res.type('text/plain');
+    res.send('in the test receiver');
+  });
 
-
+/* 
   app.get('/clients', function(req, res) {
     handleGetAll(req, res, req.param('enc'));
   });
@@ -208,12 +213,12 @@ module.exports = function (app) {
 
   app.post('/vaccines_recorded', function(req, res) {
     handlePost(req, res);
-  });
+  }); */
 };
 
 
 // ========== Helper function that do the work ;) ===============================
-var handleGetAll = function (req, res, encoding) {
+/* var handleGetAll = function (req, res, encoding) {
   var collection = req.route.path.substring(1,req.route.path.length);
   // var collection = route
 
@@ -293,7 +298,7 @@ var handlePost = function (req, res) {
       res.statusCode = 404;
       return res.send(reason.message);
     });
-};
+}; */
 
 var verfiyGoogleToken = function (google_token) {
   // options for GET
