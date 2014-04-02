@@ -14,22 +14,15 @@ var AUTH_API_NAME= 'oauth2';
 var AUTH_API_VERSION='v2';
 var GOOGLE_TOKEN_PARAMETER_NAME='google_access_token';
 var CLIENT_TOKEN_PARAMETER_NAME='client_access_token';
-var JWT_SECRET_KEY = 'chat.backend';
-var profile = {
-    email: 'shenli570@gmail.com',
+var JWT_SECRET_KEY = 'chat.backend1';
+var DB_Profile = {
+    email: 'xoompads@gmail.com',
 	google_access_token:'ISISISISISIS'
   };
   
-
-function getUserProfile(client, authClient, userId, callback) {
-  client
-    .oauth2.userinfo.get()
-    .withAuthClient(authClient)
-    .execute(callback);
-}
-
 function setErrorResponse(err,res)
 {
+	console.log(err);
 	res.statusCode=404;
 	return res.json({'An error occured': err});
 }
@@ -65,16 +58,17 @@ var verfiyGoogleToken = function (req, res) {
 			else
 			{
 				//TODO to validate the email here
-				console.log(userInfo.email);
-				if(userInfo.email==profile.email)
+				console.log(userInfo);
+				if(userInfo.email==DB_Profile.email)
 				{
 					// updata the google_access_token into the profile
-					profile.google_access_token = googleToken;
+					DB_Profile.google_access_token = googleToken;
 					// generate JWT token here
-					var jwtToken = getJWTToken(profile);
+					var jwtToken = getJWTToken(DB_Profile);
 					// return the jwt token to the app
-					res.statusCode=200;
-					res.json("client_access_token",jwtToken);
+					//res.statusCode=200;
+					res.send(200, jwtToken);
+					//res.json("client_access_token",jwtToken);
 				}
 			}
 		});
@@ -97,7 +91,7 @@ var verifyClientToken = function(req, res, next){
 	try
 	{
 		var userInfo = jwt.decode(clientToken, JWT_SECRET_KEY);
-		if(userInfo.email==profile.email&&userInfo.google_access_token==profile.google_access_token)
+		if(userInfo.email==DB_Profile.email&&userInfo.google_access_token==DB_Profile.google_access_token)
 		{
 			console.log(userInfo.email);
 			console.log(userInfo.google_access_token);

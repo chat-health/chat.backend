@@ -24,8 +24,7 @@ module.exports = function (app) {
   });
   
   app.get('/test', function(req, res) {
-    res.type('text/plain');
-    res.send('in the test receiver');
+	res.send(200,"in the test function");
   });
 
 /* 
