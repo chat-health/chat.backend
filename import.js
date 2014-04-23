@@ -66,7 +66,7 @@ var postheaders = {
 
 // the post options
 var optionspost = {
-    host : '0.0.0.0',
+    host : 'localhost',
     port : 8000,
     path : '/'+COLLECTION,
     method : 'POST',
@@ -103,9 +103,11 @@ _.each(array, function(doc){
 
     // write the json data
     var jsonObj = JSON.stringify(doc);
+	console.log(jsonObj);
     reqPost.write(jsonObj);
     reqPost.end();
     reqPost.on('error', function(e) {
-        console.error(e);
+        console.error("here is the error");
+		console.error(e);
     });
 });

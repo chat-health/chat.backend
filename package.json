@@ -11,12 +11,14 @@
     "url": "git://github.com/chat-health/chat.backend.git"
   },
   "dependencies": {
-    "express": "*",
+    "express": "3.0",
     "underscore": "*",
     "mpromise": "*",
     "mongoose": "*",
     "xmlbuilder": "*",
-    "optimist": "*"
+    "optimist": "*",
+	"jwt-simple": "*",
+	"googleapis": "*"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
