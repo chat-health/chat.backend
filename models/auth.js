@@ -6,6 +6,6 @@ var Auth = new mongoose.Schema({
   deviceid : String,
   created_at: Date,
   modified_at: Date
-}, { versionKey: false });
+}, { versionKey: false, collection: 'authorization' });
 // Hiding __v - version key http://stackoverflow.com/questions/13699784/mongoose-v-property-hide
 module.exports = mongoose.model('auth', Auth);

@@ -143,6 +143,8 @@ var getModelFor = function(collection) {
     model = Vaccine;
   } else if (collection === "vaccines_recorded") {
     model = VaccineRecorded;
+  } else if (collection === "auth") {
+    model = Auth;
   } else {
     // No routing match so we return null
     model = null;
@@ -174,6 +176,7 @@ module.exports = {
   PageAssessment1: PageAssessment1,
   Vaccine: Vaccine,
   VaccineRecorded: VaccineRecorded,
+  Auth: Auth,
   storeObjIn: storeObjIn,
   updateDocument: updateDocument,
   retrieveFromWhere: retrieveFromWhere,
