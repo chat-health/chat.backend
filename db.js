@@ -28,6 +28,8 @@ var PageAssessment1 = require('./models/pageAssessment1');
 var Vaccine = require('./models/vaccine');
 var VaccineRecorded = require('./models/vaccineRecorded');
 
+var Auth = require('./models/auth');
+
 var storeObjIn = function (data, collection) {
   var promise;
 
