@@ -25,7 +25,7 @@ var DB_Profile = {};
 function setErrorResponse(err,res)
 {
 	console.log(err);
-	res.statusCode=404;
+	res.statusCode=401;
 	return res.json(err);
 }
 
