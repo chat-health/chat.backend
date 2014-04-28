@@ -9,8 +9,8 @@ app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.session({secret: "90ndsj9dfdsf"}));
-  app.use("/auth",auth.verfiyGoogleToken);
-  app.use(auth.verifyClientToken);
+//  app.use("/auth",auth.verfiyGoogleToken);
+//  app.use(auth.verifyClientToken);
   app.use(app.router);
   // app.set('view engine', 'jade');
   // app.use(express.static(__dirname + '/public'));
