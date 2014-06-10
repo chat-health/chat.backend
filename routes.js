@@ -254,6 +254,19 @@ module.exports = function (app) {
   // });
 
 
+  app.get('/attendance', function(req, res) {
+    handleGetAll(req, res);
+  });
+
+  app.get('/attendance/:id', function(req, res) {
+    handleGetByID(req, res, req.params.id, req.param('enc'));
+  });
+
+  app.post('/attendance', function(req, res) {
+    handlePost(req, res);
+  });
+
+
   app.get('/services_accessed', function(req, res) {
     handleGetAll(req, res);
   });

@@ -3,6 +3,7 @@ var HealthTopic = new mongoose.Schema({
   _id : Number,
   name : String,
   theme : String,
+  screenshot : String,
   created_at: Date,
   modified_at: Date
 }, { versionKey: false });
