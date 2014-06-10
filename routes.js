@@ -377,15 +377,19 @@ var handleGetByID = function (req, res, id, encoding) {
         var xmlRoot = builder.create(collection);
 
         _.each(data, function(d) {
-          var dObj = {};
-          // the following seems weird but is necessary to make dates work
-          // They are stored as ISODate in Mongo and will crash the XML parser
-          // Stringifying and parsing back creates a string representation of date that passes the XML parser
-          var obj = JSON.parse(JSON.stringify(d.toObject()));
-          dObj[collection] = obj;
-          dObj[collection]['@id'] = obj._id;
+          // for xml encoding, we just want to skip the arrays (until we learn from Rob what he wants from them), hence the below
+          if !(d instanceof Array) {
+            var dObj = {};
+            // the following seems weird but is necessary to make dates work
+            // They are stored as ISODate in Mongo and will crash the XML parser
+            // Stringifying and parsing back creates a string representation of date that passes the XML parser
+            var obj = JSON.parse(JSON.stringify(d.toObject()));
+            dObj[collection] = obj;
+            dObj[collection]['@id'] = obj._id;
 
-          xmlRoot.ele(dObj);
+            xmlRoot.ele(dObj);
+          }
+
         });
 
         res.writeHead( 200, {'Content-Type': 'text/xml'} );

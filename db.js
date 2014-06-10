@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/chat');
 var Promise = require('mpromise');
 
+//var MinVisit = require('./models/minVisit');
+
 var Attendance = require('./models/attendance');
 var Client = require('./models/client');
 var Household = require('./models/household');
