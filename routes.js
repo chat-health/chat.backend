@@ -378,7 +378,9 @@ var handleGetByID = function (req, res, id, encoding) {
 
         _.each(data, function(d) {
           // for xml encoding, we just want to skip the arrays (until we learn from Rob what he wants from them), hence the below
-          if !(d instanceof Array) {
+          if (d instanceof Array) {
+            console.log("Skipping an array");
+          } else {
             var dObj = {};
             // the following seems weird but is necessary to make dates work
             // They are stored as ISODate in Mongo and will crash the XML parser
