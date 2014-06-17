@@ -77,12 +77,12 @@ var updateDocument = function (collection, data) {
   return promise;
 };
 
-var retrieveFromWhere = function (collection, where) {
+var retrieveFromWhere = function (collection, where, columns, options) {
   var promise;
   var model = getModelFor(collection);
 
   if (model) {
-    promise = model.find(where).exec();
+    promise = model.find(where, columns, options).exec();
   } else {
     // No routing match so we return an error
     promise = new Promise();

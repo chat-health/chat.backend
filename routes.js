@@ -23,7 +23,7 @@ module.exports = function (app) {
   });
 
   app.get('/clients/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/clients', function(req, res) {
@@ -36,7 +36,7 @@ module.exports = function (app) {
   });
 
   app.get('/households/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/households', function(req, res) {
@@ -49,7 +49,7 @@ module.exports = function (app) {
   });
 
   app.get('/workers/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/workers', function(req, res) {
@@ -62,7 +62,7 @@ module.exports = function (app) {
   });
 
   app.get('/services/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/services', function(req, res) {
@@ -75,7 +75,7 @@ module.exports = function (app) {
   });
 
   app.get('/health_themes/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/health_themes', function(req, res) {
@@ -88,7 +88,7 @@ module.exports = function (app) {
   });
 
   app.get('/health_topics/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/health_topics', function(req, res) {
@@ -101,7 +101,7 @@ module.exports = function (app) {
   });
 
   app.get('/videos/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/videos', function(req, res) {
@@ -114,7 +114,7 @@ module.exports = function (app) {
   });
 
   app.get('/resources/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/resources', function(req, res) {
@@ -127,7 +127,7 @@ module.exports = function (app) {
   });
 
   app.get('/health_pages/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/health_pages', function(req, res) {
@@ -140,7 +140,7 @@ module.exports = function (app) {
   });
 
   app.get('/health_selects/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/health_selects', function(req, res) {
@@ -153,7 +153,7 @@ module.exports = function (app) {
   });
 
   app.get('/topic_videos/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/topic_videos', function(req, res) {
@@ -166,7 +166,7 @@ module.exports = function (app) {
   });
 
   app.get('/page_text1/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/page_text1', function(req, res) {
@@ -179,7 +179,7 @@ module.exports = function (app) {
   });
 
   app.get('/page_select1/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/page_select1', function(req, res) {
@@ -192,7 +192,7 @@ module.exports = function (app) {
   });
 
   app.get('/page_video1/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/page_video1', function(req, res) {
@@ -205,7 +205,7 @@ module.exports = function (app) {
   });
 
   app.get('/page_assessment1/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/page_assessment1', function(req, res) {
@@ -218,7 +218,7 @@ module.exports = function (app) {
   });
 
   app.get('/vaccines/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/vaccines', function(req, res) {
@@ -236,7 +236,7 @@ module.exports = function (app) {
   });
 
   app.get('/visits/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/visits', function(req, res) {
@@ -259,7 +259,7 @@ module.exports = function (app) {
   });
 
   app.get('/attendance/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/attendance', function(req, res) {
@@ -272,7 +272,7 @@ module.exports = function (app) {
   });
 
   app.get('/services_accessed/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/services_accessed', function(req, res) {
@@ -285,7 +285,7 @@ module.exports = function (app) {
   });
 
   app.get('/resources_accessed/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/resources_accessed', function(req, res) {
@@ -298,7 +298,7 @@ module.exports = function (app) {
   });
 
   app.get('/health_topics_accessed/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/health_topics_accessed', function(req, res) {
@@ -311,7 +311,7 @@ module.exports = function (app) {
   });
 
   app.get('/vaccines_recorded/:id', function(req, res) {
-    handleGetByID(req, res, req.params.id, req.param('enc'));
+    handleGetByID(req, res, req.params.id);
   });
 
   app.post('/vaccines_recorded', function(req, res) {
@@ -324,6 +324,8 @@ module.exports = function (app) {
 var handleGetAll = function (req, res) {
   var collection = req.route.path.substring(1,req.route.path.length);
   var where = {};
+  var columns = null;
+  var options = {};
   var last_synced_at = null;
   var encoding = req.param('enc');
 
@@ -337,7 +339,34 @@ var handleGetAll = function (req, res) {
     }
   }
 
-  db.retrieveFromWhere (collection, where)
+  if (req.param('sort_by')) {
+    sort_by = req.param('sort_by');
+    try {
+      sortObj = JSON.parse(sort_by);
+      _.map(sortObj, function(v,k){
+        if (v === "ASC") {
+          sortObj[k] = 1;
+        } else if (v === "DESC") {
+          sortObj[k] = -1;
+        }
+      });
+      options.sort = sortObj;
+    } catch (e) {
+      return res.send('Error 404: Request cannot be fullfilled. Reason: '+e);
+    }
+  }
+
+  // options = {
+  //   skip:0, // Starting Row
+  //   limit:1, // Ending Row
+  //   sort:{
+  //       _id: -1 //Sort by Date Added DESC
+  //   }
+  // };
+
+  // options.sort = {_id: -1};
+
+  db.retrieveFromWhere (collection, where, columns, options)
     .onFulfill(function (data) {
       if (encoding === "xml") {
         var xmlRoot = builder.create(collection);
@@ -366,10 +395,10 @@ var handleGetAll = function (req, res) {
     });
 };
 
-var handleGetByID = function (req, res, id, encoding) {
+var handleGetByID = function (req, res, id) {
   var collection = req.route.path.match(regex)[1];
-
   var where = {'_id': id};
+  var encoding = req.param('enc');
 
   db.retrieveFromWhere (collection, where)
     .onFulfill(function (data) {
