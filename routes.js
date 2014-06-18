@@ -354,8 +354,8 @@ var handleGetAll = function (req, res) {
       });
       options.sort = sortObj;
     } catch (e) {
-      res.statusCode = 404;
-      return res.send('Error 404: Request cannot be fulfilled, due to parsing error or JSON sort expression. Try this attached to your URL ?sort_by={"sort_1":"ASC","sort_2":"DESC"} ');
+      res.statusCode = 400;
+      return res.send('Error 400: Bad Request - due to parsing error or JSON sort expression. Try this attached to your URL ?sort_by={"sort_1":"ASC","sort_2":"DESC"} ');
     }
   }
 
