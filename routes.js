@@ -339,6 +339,8 @@ var handleGetAll = function (req, res) {
     }
   }
 
+  // using this post as an orientation on how to do sorting
+  // http://stackoverflow.com/questions/4299991/how-to-sort-in-mongoose
   if (req.param('sort_by')) {
     sort_by = req.param('sort_by');
     try {
@@ -352,7 +354,8 @@ var handleGetAll = function (req, res) {
       });
       options.sort = sortObj;
     } catch (e) {
-      return res.send('Error 404: Request cannot be fullfilled. Reason: '+e);
+      res.statusCode = 404;
+      return res.send('Error 404: Request cannot be fulfilled, due to parsing error or JSON sort expression. Try this attached to your URL ?sort_by={"sort_1":"ASC","sort_2":"DESC"} ');
     }
   }
 
