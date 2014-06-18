@@ -20,3 +20,5 @@ chattunnel.sh
 schema.mwb.bak
 
 test_data/
+push_test_data.sh
+pull_test_data.sh
