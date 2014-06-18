@@ -342,9 +342,12 @@ var handleGetAll = function (req, res) {
   // using this post as an orientation on how to do sorting
   // http://stackoverflow.com/questions/4299991/how-to-sort-in-mongoose
   if (req.param('sort_by')) {
+    // retrieve sort_by URL parameter (has to be in JSON notation)
     sort_by = req.param('sort_by');
     try {
+      // we parse the sort statement into a JS object
       sortObj = JSON.parse(sort_by);
+      // now we go through the parameters and replace ASC and DESC with 1 and -1
       _.map(sortObj, function(v,k){
         if (v === "ASC") {
           sortObj[k] = 1;
@@ -354,14 +357,15 @@ var handleGetAll = function (req, res) {
       });
       options.sort = sortObj;
     } catch (e) {
+      // sort_by parameter wasn't valid JSON so we return a 400 error (Bad Request)
       res.statusCode = 400;
-      return res.send('Error 400: Bad Request - due to parsing error or JSON sort expression. Try this attached to your URL ?sort_by={"sort_1":"ASC","sort_2":"DESC"} ');
+      return res.send('Error 400: Bad Request - due to parsing error of JSON sort expression. Try this attached to your URL ?sort_by={"sort_1":"ASC","sort_2":"DESC"} ');
     }
   }
 
   // options = {
   //   skip:0, // Starting Row
-  //   limit:1, // Ending Row
+  //   limit:9, // Ending Row
   //   sort:{
   //       _id: -1 //Sort by Date Added DESC
   //   }
@@ -383,6 +387,16 @@ var handleGetAll = function (req, res) {
           dObj[collection] = obj;
           dObj[collection]['@id'] = obj._id;
 
+          // This is a hack :/
+          // The XML builder seems to break on arrays. Since rob won't need them
+          // we are removing them from the XML result
+          _.map(dObj[collection], function (v,k) {
+            if (Array.isArray(v)) {
+              // remove array from object
+              delete dObj[collection][k];
+            }
+          });
+          // XML parser dosn't seem to like arrays :(
           xmlRoot.ele(dObj);
         });
 
