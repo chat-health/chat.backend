@@ -335,7 +335,29 @@ var handleGetAll = function (req, res) {
     // than the date given to us via the get 'last_synced_at' parameter
     // {modified_at: {$gt: new Date(2014, 10, 7)}}
     if (last_synced_at && (last_synced_at instanceof Date)) {
-      where = {modified_at: {$gt: last_synced_at}};
+      // where = {modified_at: {$gt: last_synced_at}};
+      // above line should work since we add to where later on but better to avoid any problems
+      where.modified_at = {$gt: last_synced_at};
+    }
+  }
+
+  // allow user to pass where criteria to limit result set
+  if (req.param('where')) {
+    var whereStatement = req.param('where');
+    try {
+      // we parse the sort statement into a JS object
+      var whereObj = JSON.parse(whereStatement);
+
+      if (where.modified_at) {
+        whereObj.modified_at = where.modified_at;
+        where = whereObj;
+      } else {
+        where = whereObj;
+      }
+    } catch (e) {
+      // where parameter wasn't valid JSON so we return a 400 error (Bad Request)
+      res.statusCode = 400;
+      return res.send('Error 400: Bad Request - due to parsing error of JSON where expression. Try this attached to your URL ?where={"field_1":"cond","field_2":{"$gt": 2}} ');
     }
   }
 
@@ -343,10 +365,10 @@ var handleGetAll = function (req, res) {
   // http://stackoverflow.com/questions/4299991/how-to-sort-in-mongoose
   if (req.param('sort_by')) {
     // retrieve sort_by URL parameter (has to be in JSON notation)
-    sort_by = req.param('sort_by');
+    var sort_by = req.param('sort_by');
     try {
       // we parse the sort statement into a JS object
-      sortObj = JSON.parse(sort_by);
+      var sortObj = JSON.parse(sort_by);
       // now we go through the parameters and replace ASC and DESC with 1 and -1
       _.map(sortObj, function(v,k){
         if (v === "ASC") {
