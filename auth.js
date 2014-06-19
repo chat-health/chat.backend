@@ -36,7 +36,7 @@ function getJWTToken(profile)
 }
 
 
-var verfiyGoogleToken = function (req, res) {
+var verifyGoogleToken = function (req, res) {
   // options for GET
   var googleToken = req.param(GOOGLE_TOKEN_PARAMETER_NAME);
   console.log('googleToken', googleToken);
@@ -191,7 +191,7 @@ var verifyClientToken = function(req, res, next){
   }
 };
 
-exports.verfiyGoogleToken=verfiyGoogleToken;
+exports.verifyGoogleToken=verifyGoogleToken;
 exports.verifyClientToken=verifyClientToken;
 
 
