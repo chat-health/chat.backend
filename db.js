@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 // mongoose.connect('mongodb://localhost/chat');
 var Promise = require('mpromise');
 
+// Using NODE_ENV to decide if running as dev or prod
+// http://grokbase.com/t/gg/nodejs/123j6pswdg/where-is-node-env-documented
 if (process.env.NODE_ENV === "development") {
   mongoose.connect('mongodb://localhost/chat-dev');
 } else {

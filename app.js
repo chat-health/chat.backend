@@ -22,6 +22,8 @@ app.configure(function() {
 
 routes(app);
 
+// Using NODE_ENV to decide if running as dev or prod
+// http://grokbase.com/t/gg/nodejs/123j6pswdg/where-is-node-env-documented
 if (process.env.NODE_ENV === "development") {
   app.listen(process.env.PORT || 8001);
 } else {
