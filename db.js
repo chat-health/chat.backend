@@ -1,10 +1,12 @@
 var mongoose = require('mongoose');
 // mongoose.connect('mongodb://localhost/chat');
 var Promise = require('mpromise');
-var fs = require('fs');
 
-var jsonConfig = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-mongoose.connect(jsonConfig.databaseUrl);
+if (process.env.NODE_ENV === "development") {
+  mongoose.connect('mongodb://localhost/chat-dev');
+} else {
+  mongoose.connect('mongodb://localhost/chat');
+}
 
 //var MinVisit = require('./models/minVisit');
 

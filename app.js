@@ -22,4 +22,8 @@ app.configure(function() {
 
 routes(app);
 
-app.listen(process.env.PORT || 8000);
+if (process.env.NODE_ENV === "development") {
+  app.listen(process.env.PORT || 8001);
+} else {
+  app.listen(process.env.PORT || 8000);
+}
