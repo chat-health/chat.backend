@@ -10,8 +10,6 @@ if (process.env.NODE_ENV === "development") {
   mongoose.connect('mongodb://localhost/chat');
 }
 
-//var MinVisit = require('./models/minVisit');
-
 var Attendance = require('./models/attendance');
 var Client = require('./models/client');
 var Household = require('./models/household');
