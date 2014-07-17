@@ -7,6 +7,7 @@ var Worker = new mongoose.Schema({
   password : String,
   role_name : String,
   assigned_community: String,
+  phone_number: Number,
   created_at: Date,
   modified_at: Date
 }, { versionKey: false });
