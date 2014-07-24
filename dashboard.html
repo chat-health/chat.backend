@@ -29,10 +29,11 @@
 
 			function showData()
 			{
-				var myselect=document.getElementById("dataSelector");
-				var selectedValue = myselect.options[myselect.selectedIndex].value;
+				var tableSelect=document.getElementById("dataSelector");
+				var sortSelect=document.getElementById("sortCriteria");
+				var selectedValue = tableSelect.options[tableSelect.selectedIndex].value;
 				console.log(selectedValue);
-				var requestUrl = HOSTNAME + "/"+selectedValue+"?client_access_token="+clientToken + '&sort_by={"_id":"ASC"}';
+				var requestUrl = HOSTNAME + "/"+selectedValue+"?client_access_token="+clientToken + '&sort_by={"'+sortSelect+'":"ASC"}';
 				console.log(requestUrl);
 				$.ajax({
 					url: requestUrl,
@@ -60,30 +61,42 @@
 				var redirectUrl = HOSTNAME + "/login?is_sign_out=true";
 				window.location = redirectUrl;
 			}
+
+			function showAlert() {
+				alert("Coming soon...");
+			}
 		</script>
 	</head>
 	<body>
 		<table cellpadding="5">
 		  <tr>
-			<td><button type="button" onClick='getClientToken();'>Generate Report</button></td>
+			<td><button type="button" onClick='showAlert()'>Generate Report</button></td>
 			<td>
+				<span>Table: </span>
 				<select id="dataSelector" onchange="showData()">
 				  <option value="clients">clients</option>
-				  <option value="healthPages">healthPages</option>
-				  <option value="healthSelects">healthSelects</option>
-				  <option value="healthThemes">healthThemes</option>
-				  <option value="healthTopics">healthTopics</option>
+				  <option value="health_pages">healthPages</option>
+				  <option value="health_selects">healthSelects</option>
+				  <option value="health_themes">healthThemes</option>
+				  <option value="health_topics">healthTopics</option>
 				  <option value="households">households</option>
-				  <option value="pageAssessment1">pageAssessment1</option>
-				  <option value="pageSelect1">pageSelect1</option>
-				  <option value="pageText1">pageText1</option>
-				  <option value="pageVideo1">pageVideo1</option>
+				  <option value="page_assessment1">pageAssessment1</option>
+				  <option value="page_select1">pageSelect1</option>
+				  <option value="page_text1">pageText1</option>
+				  <option value="page_video1">pageVideo1</option>
 				  <option value="resources">resources</option>
 				  <option value="services">services</option>
-				  <option value="topicVideos">topicVideos</option>
+				  <option value="topic_videos">topicVideos</option>
 				  <option value="vaccines">vaccines</option>
 				  <option value="videos">videos</option>
 				  <option value="workers">workers</option>
+				</select>
+			</td>
+			<td>
+				<span>Sort by: </span>
+				<select id="sortCriteria" onchange="showData()">
+				  <option value="_id">id</option>
+				  <option value="name">name</option>
 				</select>
 			</td>
 			<td><button type="button" onClick='signOut();'>Sign Out</button></td>
