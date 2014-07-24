@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script>
+			var clientToken="";
+			
+			$(window).load(function(){$(document).ready(function(){
+				document.getElementById("dataSelector").selectedIndex = -1;
+				var requestClientTokenUrl = "http://localhost:8000/dashboard?is_request_clientToken=true";
+				$.ajax({
+					url: requestClientTokenUrl,
+					data: null,
+					success: function(resp) {
+						clientToken    =   resp;
+						console.log(clientToken);
+					},
+					error: function(jqXHR, textStatus, errorThrown)
+					{
+						console.log(errorThrown);
+						var redirectUrl = "http://localhost:8000/login";
+						window.location = redirectUrl;
+					},
+					dataType: "text"
+				});
+			});});
+			
+			function showData()
+			{
+				var myselect=document.getElementById("dataSelector");
+				var selectedValue = myselect.options[myselect.selectedIndex].value;
+				console.log(selectedValue);
+				var requestUrl = "http://localhost:8000/"+selectedValue+"?client_access_token="+clientToken;
+				console.log(requestUrl);
+				$.ajax({
+					url: requestUrl,
+					data: null,
+					success: function(resp) {
+						console.log(resp);
+						$("#dataHolder").html(resp);
+					},
+					error: function(jqXHR, textStatus, errorThrown)
+					{
+						console.log(jqXHR);
+						console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
+						$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
+					},
+					dataType: "text"
+				});
+			}
+			
+			function signOut()
+			{
+				var redirectUrl = "http://localhost:8000/login?is_sign_out=true";
+				window.location = redirectUrl;
+			}
+		</script>
+	</head>
+	<body>
+		<table cellpadding="5"> 
+		  <tr>
+			<td><button type="button" onClick='getClientToken();'>Generate Report</button></td>
+			<td>
+				<select id="dataSelector" onchange="showData()">
+				  <option value="clients">clients</option>
+				  <option value="healthPages">healthPages</option>
+				  <option value="healthSelects">healthSelects</option>
+				  <option value="healthThemes">healthThemes</option>
+				  <option value="healthTopics">healthTopics</option>
+				  <option value="households">households</option>
+				  <option value="pageAssessment1">pageAssessment1</option>
+				  <option value="pageSelect1">pageSelect1</option>
+				  <option value="pageText1">pageText1</option>
+				  <option value="pageVideo1">pageVideo1</option>
+				  <option value="resources">resources</option>
+				  <option value="services">services</option>
+				  <option value="topicVideos">topicVideos</option>
+				  <option value="vaccines">vaccines</option>
+				  <option value="videos">videos</option>
+				  <option value="workers">workers</option>
+				</select>
+			</td>
+			<td><button type="button" onClick='signOut();'>Sign Out</button></td>
+		  </tr>
+		  <tr>
+			<td colspan="2">
+				<pre id="dataHolder" style="word-wrap: break-word; white-space: pre-wrap;"></pre>
+			</td>
+		  </tr>
+		</table>
+	</body>
+</html>

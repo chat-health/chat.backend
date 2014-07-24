@@ -7,6 +7,8 @@ var AUTH_API_NAME= 'oauth2';
 var AUTH_API_VERSION='v2';
 var GOOGLE_TOKEN_PARAMETER_NAME='google_access_token';
 var CLIENT_TOKEN_PARAMETER_NAME='client_access_token';
+var IS_REQUEST_CLIENT_TOKEN_PARAMETER_NAME ="is_request_clientToken";
+var IS_SIGN_OUT_PARAMETER_NAME ="is_sign_out";
 var DEVICE_ID_PARAMETER_NAME = 'deviceid';
 var JWT_SECRET_KEY = 'chat.backend1';
 var REDIRECT_URL = '';
@@ -143,7 +145,21 @@ var verifyClientToken = function(req, res, next){
   {
     console.log(req.path);
     next();
+	return;
   }
+  if(req.path=="/login")
+  {
+	console.log(req.path);
+	next();
+	return;
+  }
+  if(req.path=="/dashboard")
+  {
+	console.log(req.path);
+	next();
+	return;
+  }
+  
   var clientToken = req.param(CLIENT_TOKEN_PARAMETER_NAME);
   try
   {
@@ -188,11 +204,60 @@ var verifyClientToken = function(req, res, next){
     // handle the error safely
     console.log(err);
     setErrorResponse(ERROR_CLIENT_TOKEN_NOT_VALID,res);
+	return;
   }
+};
+
+var loginFn = function(req,res,next)
+{
+	console.log(req.param(IS_SIGN_OUT_PARAMETER_NAME));
+	if(null!=req.param(IS_SIGN_OUT_PARAMETER_NAME)&&"true"==req.param(IS_SIGN_OUT_PARAMETER_NAME))
+	{
+		console.log("delete session");
+		req.session.clientToken=null;
+	}
+	console.log("in login handle");
+	var html_dir = './';
+	// routes to serve the static HTML files
+	res.status(200).sendfile(html_dir + 'auth.html');
+	return;
+};
+
+var dashboardFn = function(req,res,next)
+{
+	console.log("in dashboard handle");
+	var clientToken;
+	if(req.param(CLIENT_TOKEN_PARAMETER_NAME))
+	{
+		clientToken = req.param(CLIENT_TOKEN_PARAMETER_NAME);
+		console.log(clientToken);
+		req.session.clientToken=clientToken;
+	}
+	if(req.param(IS_REQUEST_CLIENT_TOKEN_PARAMETER_NAME))
+	{
+		if(req.session.clientToken)
+		{
+			clientToken=req.session.clientToken;
+			res.send(200, clientToken);
+			return;
+		}
+		if(null==clientToken||""==clientToken)
+		{
+			setErrorResponse(ERROR_CLIENT_TOKEN_NOT_VALID,res);
+			console.log("client token is null");
+			return;
+		}
+	}
+	
+	var html_dir = './';
+	// routes to serve the static HTML files
+	res.status(200).sendfile(html_dir + 'dashboard.html');
+	return;
 };
 
 exports.verifyGoogleToken=verifyGoogleToken;
 exports.verifyClientToken=verifyClientToken;
-
+exports.loginFn=loginFn;
+exports.dashboardFn=dashboardFn;
 
 

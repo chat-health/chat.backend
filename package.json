@@ -18,7 +18,8 @@
     "xmlbuilder": "*",
     "optimist": "*",
 	"jwt-simple": "*",
-	"googleapis": "*"
+	"googleapis": "*",
+	"express-session":"*"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
