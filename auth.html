@@ -7,7 +7,7 @@
         var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
         var SCOPE       =   'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
         var CLIENTID    =   '55000252691-rvdv769veahs88jub2v0s7213p6oom1a.apps.googleusercontent.com';
-        var REDIRECT    =   'http://localhost:8000/login'
+        var REDIRECT    =   'http://lmbutler-ssa.net/login'
         var LOGOUT      =   'http://accounts.google.com/Logout';
         var TYPE        =   'token';
         var _url        =   OAUTHURL + 'scope=' + SCOPE + '&client_id=' + CLIENTID + '&redirect_uri=' + REDIRECT + '&response_type=' + TYPE;
@@ -20,7 +20,7 @@
         function login() {
 //			console.log("login");
             var myWindow =   window.open(_url, "windowname1", 'width=800, height=600');
-            var pollTimer   =   window.setInterval(function() { 
+            var pollTimer   =   window.setInterval(function() {
 //                console.log("this is new windows url:"+myWindow.document.URL);
 				try {
                     if (myWindow.document.URL.indexOf(REDIRECT) != -1) {
@@ -44,14 +44,14 @@
 			$.ajax({
                 url: VALIDURL + token,
                 data: null,
-                success: function(responseText){  
+                success: function(responseText){
 					console.log("success login");
                     getUserInfo();
                     loggedIn = true;
                     $('#loginText').hide();
                     $('#logoutText').show();
-                },  
-                dataType: "jsonp"  
+                },
+                dataType: "jsonp"
             });
         }
 
@@ -91,18 +91,18 @@
             $('#uName').text('Welcome ');
             $('#imgHolder').attr('src', 'none.jpg');
         }
-		
+
 		function getClientToken() {
 			var google_access_token = $("#google_access_token").val();
 			var deviceid = $("#deviceid").val();
 			var requestURL = "http://localhost:8000/auth?google_access_token="+google_access_token+"&deviceid="+deviceid;
 			console.log(requestURL);
-			
+
 			$.ajax({
                 url: requestURL,
                 data: null,
                 success: function(resp) {
-					
+
                     clientToken    =   resp;
 					var redirectUrl = "http://localhost:8000/dashboard?client_access_token="+clientToken;
                     //console.log(clientToken);
@@ -123,13 +123,13 @@
     <a href='#' onClick='login();' id="loginText"'> Click here to login </a>
     <a href="#" style="display:none" id="logoutText" target='myIFrame' onclick="myIFrame.location='https://www.google.com/accounts/Logout'; startLogoutPolling();return false;"> Click here to logout </a>
     <iframe name='myIFrame' id="myIFrame" style='display:none'></iframe>
-    
-	
+
+
 	<form id="authForm" style='display:none' action="/auth" method="post">
 		<div id='uName'></div>
 		<img src='' id='imgHolder'/>
 		<input id="google_access_token" type="hidden" name="google_access_token"/>
-		<table cellpadding="2"> 
+		<table cellpadding="2">
 		  <tr>
 			<td>AccessToken:</td>
 			<td> <input id="deviceid" type="text" name="deviceid"/> </td>
@@ -140,6 +140,6 @@
 		  </tr>
 		</table>
 	</form>
-	
+
 </body>
 </html>
