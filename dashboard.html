@@ -39,8 +39,11 @@
 					data: null,
 					success: function(resp) {
 						console.log(resp);
-						var formattedStr = JSON.stringify(resp, null, "\t");
-						$("#dataHolder").html(formattedStr);
+						//var formattedStr = JSON.stringify(resp, null, "\t");
+						//$("#dataHolder").text(formattedStr);
+						//$('#dataHolder').html(resp);
+						$("#dataHolder").html(JSON.stringify($.parseJSON(resp),null,4));
+						//$("#data")
 					},
 					error: function(jqXHR, textStatus, errorThrown)
 					{
