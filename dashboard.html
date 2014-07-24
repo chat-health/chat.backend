@@ -32,7 +32,7 @@
 				var myselect=document.getElementById("dataSelector");
 				var selectedValue = myselect.options[myselect.selectedIndex].value;
 				console.log(selectedValue);
-				var requestUrl = HOSTNAME + "/"+selectedValue+"?client_access_token="+clientToken;
+				var requestUrl = HOSTNAME + "/"+selectedValue+"?client_access_token="+clientToken + '&sort_by={"_id":"ASC"}';
 				console.log(requestUrl);
 				$.ajax({
 					url: requestUrl,

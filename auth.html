@@ -58,7 +58,7 @@
 
         function getUserInfo() {
             $.ajax({
-                url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + acToken + '&sort_by={"_id":"ASC"}',
+                url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + acToken,
                 data: null,
                 success: function(resp) {
                     user    =   resp;
