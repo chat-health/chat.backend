@@ -7,8 +7,9 @@
         var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
         var SCOPE       =   'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
         var CLIENTID    =   '55000252691-rvdv769veahs88jub2v0s7213p6oom1a.apps.googleusercontent.com';
-        var REDIRECT    =   'https://backend.lmbutler-ssa.net/login'
+        var REDIRECT    =   'https://backend.lmbutler-ssa.net/login';
         var LOGOUT      =   'http://accounts.google.com/Logout';
+        var HOSTNAME    =   'https://backend.lmbutler-ssa.net';
         var TYPE        =   'token';
         var _url        =   OAUTHURL + 'scope=' + SCOPE + '&client_id=' + CLIENTID + '&redirect_uri=' + REDIRECT + '&response_type=' + TYPE;
         var acToken;
@@ -95,7 +96,7 @@
 		function getClientToken() {
 			var google_access_token = $("#google_access_token").val();
 			var deviceid = $("#deviceid").val();
-			var requestURL = "http://localhost:8000/auth?google_access_token="+google_access_token+"&deviceid="+deviceid;
+			var requestURL = HOSTNAME + "/auth?google_access_token="+google_access_token+"&deviceid="+deviceid;
 			console.log(requestURL);
 
 			$.ajax({
@@ -104,7 +105,7 @@
                 success: function(resp) {
 
                     clientToken    =   resp;
-					var redirectUrl = "http://localhost:8000/dashboard?client_access_token="+clientToken;
+					var redirectUrl = HOSTNAME + "/dashboard?client_access_token="+clientToken;
                     //console.log(clientToken);
 					window.location = redirectUrl;
                 },
