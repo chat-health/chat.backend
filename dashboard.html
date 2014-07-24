@@ -30,10 +30,11 @@
 			function showData()
 			{
 				var tableSelect=document.getElementById("dataSelector");
+				var tableSelectValue = tableSelect.options[tableSelect.selectedIndex].value;
 				var sortSelect=document.getElementById("sortCriteria");
-				var selectedValue = tableSelect.options[tableSelect.selectedIndex].value;
-				console.log(selectedValue);
-				var requestUrl = HOSTNAME + "/"+selectedValue+"?client_access_token="+clientToken + '&sort_by={"'+sortSelect+'":"ASC"}';
+				var sortSelectValue = sortSelect.options[sortSelect.selectedIndex].value;
+				console.log(tableSelectValue);
+				var requestUrl = HOSTNAME + "/"+tableSelectValue+"?client_access_token="+clientToken + '&sort_by={"'+sortSelectValue+'":"ASC"}';
 				console.log(requestUrl);
 				$.ajax({
 					url: requestUrl,
