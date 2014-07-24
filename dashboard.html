@@ -39,6 +39,7 @@
 					data: null,
 					success: function(resp) {
 						console.log(resp);
+						JSON.stringify(resp, null, "\t");
 						$("#dataHolder").html(resp);
 					},
 					error: function(jqXHR, textStatus, errorThrown)
