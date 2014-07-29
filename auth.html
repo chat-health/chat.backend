@@ -7,9 +7,11 @@
         var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
         var SCOPE       =   'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
         var CLIENTID    =   '55000252691-rvdv769veahs88jub2v0s7213p6oom1a.apps.googleusercontent.com';
-        var REDIRECT    =   'https://backend.lmbutler-ssa.net/login';
+        //var REDIRECT    =   'https://backend.lmbutler-ssa.net/login';
+		var REDIRECT    =   'http://localhost:8000/login';
         var LOGOUT      =   'http://accounts.google.com/Logout';
-        var HOSTNAME    =   'https://backend.lmbutler-ssa.net';
+        //var HOSTNAME    =   'https://backend.lmbutler-ssa.net';
+		var HOSTNAME    =   'http://localhost:8000';
         var TYPE        =   'token';
         var _url        =   OAUTHURL + 'scope=' + SCOPE + '&client_id=' + CLIENTID + '&redirect_uri=' + REDIRECT + '&response_type=' + TYPE;
         var acToken;

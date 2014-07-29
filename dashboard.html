@@ -3,8 +3,9 @@
 	<head>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<script>
-			var HOSTNAME = 'https://backend.lmbutler-ssa.net';
-
+			//var HOSTNAME = 'https://backend.lmbutler-ssa.net';
+			var HOSTNAME = 'http://localhost:8000';
+			
 			var clientToken="";
 
 			$(window).load(function(){$(document).ready(function(){
@@ -29,23 +30,83 @@
 
 			function showData()
 			{
-				var tableSelect=document.getElementById("dataSelector");
-				var tableSelectValue = tableSelect.options[tableSelect.selectedIndex].value;
-				var sortSelect=document.getElementById("sortCriteria");
-				var sortSelectValue = sortSelect.options[sortSelect.selectedIndex].value;
-				console.log(tableSelectValue);
-				var requestUrl = HOSTNAME + "/"+tableSelectValue+"?client_access_token="+clientToken + '&sort_by={"'+sortSelectValue+'":"ASC"}';
-				console.log(requestUrl);
+				var sortSelectValue, tableSelect, tableSelectValue, sortSelect, requestUrl;
+				
+				tableSelect=document.getElementById("dataSelector");
+				//console.log(tableSelect.length);
+				tableSelectValue = tableSelect.options[tableSelect.selectedIndex].value;
+				sortSelect=document.getElementById("sortCriteria");
+				if(0!=sortSelect.length)
+				{
+					//console.log(sortSelect.length);
+					sortSelectValue = sortSelect.options[sortSelect.selectedIndex].value;
+				}
+				//console.log(tableSelectValue);
+				requestUrl = HOSTNAME + "/"+tableSelectValue+"?client_access_token="+clientToken + '&sort_by={"'+sortSelectValue+'":"ASC"}';
+				//console.log(requestUrl);
+
 				$.ajax({
 					url: requestUrl,
 					data: null,
 					success: function(resp) {
-						console.log(resp);
+						//console.log(resp);
 						//var formattedStr = JSON.stringify(resp, null, "\t");
 						//$("#dataHolder").text(formattedStr);
 						//$('#dataHolder').html(resp);
-						$("#dataHolder").html(JSON.stringify($.parseJSON(resp),null,4));
+						var dataObj = $.parseJSON(resp);
+						$("#dataHolder").html(JSON.stringify(dataObj,null,4));
 						//$("#data")
+						//console.log(sortSelect.options.length);
+						
+						var optionLen =sortSelect.length;
+						//console.log("remove option len:"+optionLen);
+						for(var i=0; i<optionLen;i++)
+						{
+							//console.log("index:"+ i +":" +sortSelect.options[i].text);
+							//console.log("index:"+ i);
+							sortSelect.remove(0);
+						}
+						if(0!=dataObj.length)
+							for (var key in dataObj[0]) {
+								var option = document.createElement("option");
+								option.value= key;
+								option.text = key;
+								sortSelect.add(option);
+								//console.log(' name=' + key + ' value=' + dataObj[0][key]);
+							}
+					},
+					error: function(jqXHR, textStatus, errorThrown)
+					{
+						console.log(jqXHR);
+						console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
+						$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
+					},
+					dataType: "text"
+				});
+			}
+			
+			function sortData()
+			{
+				var tableSelect=document.getElementById("dataSelector");
+				var tableSelectValue = tableSelect.options[tableSelect.selectedIndex].value;
+				var sortSelect=document.getElementById("sortCriteria");
+				var sortSelectValue = sortSelect.options[sortSelect.selectedIndex].value;
+				//console.log(tableSelectValue);
+				var requestUrl = HOSTNAME + "/"+tableSelectValue+"?client_access_token="+clientToken + '&sort_by={"'+sortSelectValue+'":"ASC"}';
+				//console.log(requestUrl);
+
+				$.ajax({
+					url: requestUrl,
+					data: null,
+					success: function(resp) {
+						//console.log(resp);
+						//var formattedStr = JSON.stringify(resp, null, "\t");
+						//$("#dataHolder").text(formattedStr);
+						//$('#dataHolder').html(resp);
+						var dataObj = $.parseJSON(resp);
+						$("#dataHolder").html(JSON.stringify(dataObj,null,4));
+						//$("#data")
+						//console.log(sortSelect.options.length);
 					},
 					error: function(jqXHR, textStatus, errorThrown)
 					{
@@ -249,7 +310,7 @@
 			</td>
 			<td>
 				<span>Sort by: </span>
-				<select id="sortCriteria" onchange="showData()">
+				<select id="sortCriteria" onchange="sortData()">
 				  <option value="_id">id</option>
 				  <option value="created_at">created_at</option>
 				  <option value="modified_at">modified_at</option>
