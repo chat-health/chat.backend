@@ -103,7 +103,7 @@
 								console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
 								$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
 							},
-							dataType: "text"
+							dataType: "json"
 						});
 					},
 					error: function(jqXHR, textStatus, errorThrown)
@@ -112,7 +112,7 @@
 						console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
 						$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
 					},
-					dataType: "text"
+					dataType: "json"
 				});
 			};
 
