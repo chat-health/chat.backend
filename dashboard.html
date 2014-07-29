@@ -135,6 +135,7 @@
 				    );
 				});
 
+				$("#dataHolder").html('');
 				var htmlChunk = '';
 
 				for (i = 0; i < visitsJSON.length; i++) {
@@ -198,21 +199,6 @@
 			    return h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s); //zero padding on minutes and second
 			}
 
-			// function tryPullAllData() {
-			//     var promise = jQuery.get(HOSTNAME + "/visits?client_access_token="+clientToken)
-			//       .then(function (data) {
-			//         var sortedData = _.sortBy(data, function (a) {
-			//           return a._id;
-			//         });
-			//         _.each(sortedData, function(activity) {
-			//           app.activityDropdownData.push(activity);
-			//         });
-			//         console.log("Activity Data pulled");
-			//       });
-
-			//     return promise;
-			// };
-
 
 		</script>
 	</head>
@@ -266,13 +252,6 @@
 
 		<div id="report-container">
 
-		</div>
-
-		<div class="report-visit">
-			<div><span>Worker name: </span><span class="first_name"></span><span class="last_name"></span></div>
-			<div><span>Worker ID: </span><span class="worker_id"></span></div>
-			<div><span>Household name: </span><span class="hh_name"></span></div>
-			<div><span>Household ID: </span><span class="hh_id"></span></div>
 		</div>
 
 	</body>
