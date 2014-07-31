@@ -12,7 +12,7 @@ var Visit = new mongoose.Schema({
   attendance: Array,
   videos_accessed: Array,
   health_topics_accessed: Array,
-  // health_selects_recorded: Array,
+  health_selects_recorded: Array,
   cha_accessed: Array
   // vaccines_recorded: Array,
 
