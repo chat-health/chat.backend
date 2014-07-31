@@ -5,7 +5,7 @@
 		<script>
 			var HOSTNAME = 'https://backend.lmbutler-ssa.net';
 			//var HOSTNAME = 'http://localhost:8000';
-			
+
 			var clientToken="";
 
 			$(window).load(function(){$(document).ready(function(){
@@ -31,7 +31,7 @@
 			function showData()
 			{
 				var sortSelectValue, tableSelect, tableSelectValue, sortSelect, requestUrl;
-				
+
 				tableSelect=document.getElementById("dataSelector");
 				//console.log(tableSelect.length);
 				tableSelectValue = tableSelect.options[tableSelect.selectedIndex].value;
@@ -57,7 +57,7 @@
 						$("#dataHolder").html(JSON.stringify(dataObj,null,4));
 						//$("#data")
 						//console.log(sortSelect.options.length);
-						
+
 						var optionLen =sortSelect.length;
 						//console.log("remove option len:"+optionLen);
 						for(var i=0; i<optionLen;i++)
@@ -84,7 +84,7 @@
 					dataType: "text"
 				});
 			}
-			
+
 			function sortData()
 			{
 				var tableSelect=document.getElementById("dataSelector");
@@ -156,7 +156,20 @@
 							url: HOSTNAME + "/workers?client_access_token=" + clientToken,
 							data: null,
 							success: function(workersJSON) {
-								populateHTML(visitsJSON, workersJSON);
+								$.ajax({
+									url: HOSTNAME + "/services_accessed?client_access_token=" + clientToken,
+									data: null,
+									success: function(servicesJSON) {
+										populateHTML(visitsJSON, workersJSON, servicesAccessedJSON);
+									},
+									error: function(jqXHR, textStatus, errorThrown)
+									{
+										console.log(jqXHR);
+										console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
+										$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
+									},
+									dataType: "json"
+								});
 							},
 							error: function(jqXHR, textStatus, errorThrown)
 							{
@@ -222,9 +235,9 @@
 					htmlChunk += '<div><span>Visit duration: </span><span class="duration">' + calcVisitLength(visitsJSON[i].start_time, visitsJSON[i].end_time) + '</span></div>'
 					htmlChunk += '<div><span>Number of clients attending: </span><span class="attendance">' + visitsJSON[i].attendance.length + '</span></div>'
 					// htmlChunk += '<div><span>Number of children under 5 attending: </span><span class="attendance-under-five>' +  + '</span></div>'
-					// htmlChunk += '<div><span>Services delivered: </span><span class="services>' +  + '</span></div>'
-					// htmlChunk += '<div><span>Health education: </span><span class="health-education>' +  + '</span></div>'
-					// htmlChunk += '<div><span>Child health assessment complete: </span><span class="cha>' +  + '</span></div>'
+					htmlChunk += '<div><span>Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, visitsJSON[i]._id) + '</span></div>'
+					htmlChunk += '<div><span>Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visitsJSON[i].health_topics_accessed) + '</span></div>'
+					// htmlChunk += '<div><span>Child health assessment complete: </span><span class="cha">' +  + '</span></div>'
 
 					htmlChunk += '<br/>'
 				}
@@ -258,6 +271,36 @@
 			    var m = Math.floor(s/60); //Get remaining minutes
 			    s -= m*60;
 			    return h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s); //zero padding on minutes and second
+			}
+
+			function getServicesAccessed(json, visit_id) {
+				var servicesStr = '';
+				$.each(json, function(i) {
+					if (json[i].visit_id == visit_id) {
+						servicesStr += json[i].service_id;
+						servicesStr += ', ';
+					}
+				});
+
+				if (servicesStr.length > 0) {
+					servicesStr = servicesStr.substr(0, str.length-2);
+				}
+
+				return servicesStr;
+			}
+
+			function getHealthTopicsCompleted(htaArray) {
+				var htaStr = '';
+				$.each(htaArray, function(i) {
+					if (htaArray[i].end_time != null && htaArray[i].end_time != "") {
+						htaStr += htaArray[i].topic_name;
+						htaStr += ', ';
+					}
+				});
+
+				if (htaStr.length > 0) {
+					htaStr = htaStr.substr(0, str.length-2);
+				}
 			}
 
 
