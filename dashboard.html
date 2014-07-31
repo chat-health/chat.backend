@@ -284,23 +284,31 @@
 
 				if (servicesStr.length > 0) {
 					servicesStr = servicesStr.substr(0, servicesStr.length-2);
+					return servicesStr;
+				} else {
+					return 'None';
 				}
-
-				return servicesStr;
 			}
 
 			function getHealthTopicsCompleted(htaArray) {
-				var htaStr = '';
-				$.each(htaArray, function(i) {
-					if (htaArray[i].end_time != null && htaArray[i].end_time != "") {
-						htaStr += htaArray[i].topic_name;
-						htaStr += ', ';
-					}
-				});
+				if (htaArray.length == 0) {
+					return 'None';
+				} else {
+					var htaStr = '';
+					$.each(htaArray, function(i) {
+						if (htaArray[i].end_time != null && htaArray[i].end_time != "") {
+							htaStr += htaArray[i].topic_name;
+							htaStr += ', ';
+						}
+					});
 
-				if (htaStr.length > 0) {
-					htaStr = htaStr.substr(0, htaStr.length-2);
+					if (htaStr.length > 0) {
+						htaStr = htaStr.substr(0, htaStr.length-2);
+					}
+
+					return htaStr;
 				}
+
 			}
 
 
