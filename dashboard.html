@@ -159,7 +159,7 @@
 								$.ajax({
 									url: HOSTNAME + "/services_accessed?client_access_token=" + clientToken,
 									data: null,
-									success: function(servicesJSON) {
+									success: function(servicesAccessedJSON) {
 										populateHTML(visitsJSON, workersJSON, servicesAccessedJSON);
 									},
 									error: function(jqXHR, textStatus, errorThrown)
@@ -198,7 +198,7 @@
 			    return x > y ? 1 : x < y ? -1 : 0;
 			};
 
-			function populateHTML(visitsJSON, workersJSON) {
+			function populateHTML(visitsJSON, workersJSON, servicesAccessedJSON) {
 				// adapted from https://stackoverflow.com/questions/3230028/how-to-order-a-json-object-by-two-keys
 				visitsJSON.sort(function(a, b) {
 					aStart = new Date(a.start_time);
@@ -283,7 +283,7 @@
 				});
 
 				if (servicesStr.length > 0) {
-					servicesStr = servicesStr.substr(0, str.length-2);
+					servicesStr = servicesStr.substr(0, servicesStr.length-2);
 				}
 
 				return servicesStr;
@@ -299,7 +299,7 @@
 				});
 
 				if (htaStr.length > 0) {
-					htaStr = htaStr.substr(0, str.length-2);
+					htaStr = htaStr.substr(0, htaStr.length-2);
 				}
 			}
 
