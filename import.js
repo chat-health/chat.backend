@@ -52,6 +52,8 @@ if (COLLECTION === "services") {
     jsonObject = fs.readFileSync('./test_data/vaccines.json', 'utf8');
 } else if (COLLECTION === "vaccines_recorded") {
     jsonObject = fs.readFileSync('./test_data/vaccinesRecorded.json', 'utf8');
+} else if (COLLECTION === "authorization") {
+    jsonObject = fs.readFileSync('./test_data/authorization.json', 'utf8');
 } else {
     console.warn("A unknown collection <"+COLLECTION+"> was choosen.");
     console.error("Exit with error");
