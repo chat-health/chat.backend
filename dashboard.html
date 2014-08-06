@@ -53,6 +53,7 @@
 						//var formattedStr = JSON.stringify(resp, null, "\t");
 						//$("#dataHolder").text(formattedStr);
 						//$('#dataHolder').html(resp);
+						$("#dataHolder").html('');
 						var dataObj = $.parseJSON(resp);
 						$("#dataHolder").html(JSON.stringify(dataObj,null,4));
 						//$("#data")
@@ -188,10 +189,6 @@
 					},
 					dataType: "json"
 				});
-			};
-
-			function pullData() {
-
 			};
 
 			function cmp(x, y) {
@@ -353,6 +350,13 @@
 				  <option value="modified_at">modified_at</option>
 				</select>
 			</td>
+<!-- 			<td>
+				<span>Format: </span>
+				<select id="formatCriteria" onchange="sortData()">
+				  <option value="json">json</option>
+				  <option value="xml">xml</option>
+				</select>
+			</td> -->
 			<td><button type="button" onClick='signOut();'>Sign Out</button></td>
 		  </tr>
 		  <tr>
