@@ -27,10 +27,10 @@
         $(window).load(function(){
             $(document).ready(function() {
                 $('#deviceid').bind('keypress', function(e) {
-                console.log('part way');
-                if ( e.keyCode == 13 ) {
-                    getClientToken();
-                    return false;
+                    if ( e.keyCode == 13 ) {
+                        getClientToken();
+                        return false;
+                    }
                 }
             });
         });
