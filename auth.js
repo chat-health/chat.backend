@@ -28,6 +28,12 @@ function setErrorResponse(err,res)
 {
   console.log(err);
   res.statusCode=401;
+  // set WWW-Authenticate header to avoid problems in Android app
+  res.set({
+    'Content-Type':'application/json',
+    'WWW-Authenticate': 'Basic realm="myRealm"'
+  });
+
   return res.json(err);
 }
 
@@ -159,7 +165,7 @@ var verifyClientToken = function(req, res, next){
 	next();
 	return;
   }
-  
+
   var clientToken = req.param(CLIENT_TOKEN_PARAMETER_NAME);
   try
   {
@@ -248,7 +254,7 @@ var dashboardFn = function(req,res,next)
 			return;
 		}
 	}
-	
+
 	var html_dir = './';
 	// routes to serve the static HTML files
 	res.status(200).sendfile(html_dir + 'dashboard.html');
