@@ -31,7 +31,12 @@ function setErrorResponse(err,res)
   // set WWW-Authenticate header to avoid problems in Android app
   res.set({
     'Content-Type':'application/json',
-    'WWW-Authenticate': 'Basic realm="myRealm"'
+    // 'WWW-Authenticate': 'Basic realm="myRealm"'
+    'WWW-Authenticate': 'Digest realm="testrealm@host.com",
+                 qop="auth,auth-int",
+                 uri="/login"
+                 nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+                 opaque="5ccc069c403ebaf9f0171e9517f40e41"'
   });
 
   return res.json(err);
