@@ -24,5 +24,6 @@ push_test_data.sh
 pull_test_data.sh
 
 assets/
+assets
 
 config.json
