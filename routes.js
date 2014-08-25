@@ -17,6 +17,24 @@ module.exports = function (app) {
     res.send('This will be the API used by the CHAT Android app for data syncing.\n Add /workers to retrieve all worker records. More to come');
   });
 
+  // ********************** DOWNLOAD FILES ***********************
+  app.get('/video/:filename', function(req, res) {
+    var file = req.params.filename,
+      path = __dirname + '/assets/videos/' + file;
+      // path = "~/Dropbox/_CHAT/5\ CHAT\ Tablet\ Assets/Videos/final/Videos\ Without\ Subtitles\ converted\ Tablet/" + file;
+
+    res.download(path, req.params.filename);
+  });
+
+  app.get('/pdf/:filename', function(req, res) {
+    var file = req.params.filename,
+      path = __dirname + '/assets/pdfs/' + file;
+      // path = "~/Dropbox/_CHAT/5\ CHAT\ Tablet\ Assets/Videos/final/Videos\ Without\ Subtitles\ converted\ Tablet/" + file;
+
+    res.download(path, req.params.filename);
+  });
+
+  // ************************* PULL ******************************
 
   app.get('/clients', function(req, res) {
     handleGetAll(req, res);
