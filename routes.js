@@ -1,6 +1,7 @@
 var _ = require('underscore');
 // XML capability
 var builder = require('xmlbuilder');
+var fs = require('fs');
 
 // Division of labour inspired by this article
 // https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
@@ -18,20 +19,17 @@ module.exports = function (app) {
   });
 
   // ********************** DOWNLOAD FILES ***********************
-  app.get('/video/:filename', function(req, res) {
-    var file = req.params.filename,
-      path = __dirname + '/assets/videos/' + file;
-      // path = "~/Dropbox/_CHAT/5\ CHAT\ Tablet\ Assets/Videos/final/Videos\ Without\ Subtitles\ converted\ Tablet/" + file;
-
-    res.download(path, req.params.filename);
+  app.get('/assets', function(req, res) {
+    var files = fs.readdirSync(__dirname +'/assets/');
+    return res.json(files);
   });
 
-  app.get('/pdf/:filename', function(req, res) {
+  app.get('/asset/:filename', function(req, res) {
     var file = req.params.filename,
-      path = __dirname + '/assets/pdfs/' + file;
+      path = __dirname + '/assets/' + file;
       // path = "~/Dropbox/_CHAT/5\ CHAT\ Tablet\ Assets/Videos/final/Videos\ Without\ Subtitles\ converted\ Tablet/" + file;
 
-    res.download(path, req.params.filename);
+    return res.download(path, req.params.filename);
   });
 
   // ************************* PULL ******************************
