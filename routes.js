@@ -29,7 +29,12 @@ module.exports = function (app) {
       path = __dirname + '/assets/' + file;
       // path = "~/Dropbox/_CHAT/5\ CHAT\ Tablet\ Assets/Videos/final/Videos\ Without\ Subtitles\ converted\ Tablet/" + file;
 
-    return res.download(path, req.params.filename);
+    if (fs.existsSync(path)) {
+      return res.download(path, req.params.filename);
+    } else {
+      res.statusCode = 400;
+      return res.send('Error 400: Bad Request - File not found');
+    }
   });
 
   // ************************* PULL ******************************
