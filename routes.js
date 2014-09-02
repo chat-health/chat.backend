@@ -18,6 +18,20 @@ module.exports = function (app) {
     res.send('This will be the API used by the CHAT Android app for data syncing.\n Add /workers to retrieve all worker records. More to come');
   });
 
+  // ********************** CSS and JS ***************************
+
+  app.get('/css/:filename', function(req, res) {
+    var file = req.params.filename,
+      path = __dirname + '/css/' + file;
+
+    if (fs.existsSync(path)) {
+      return res.download(path, req.params.filename);
+    } else {
+      res.statusCode = 400;
+      return res.send('Error 400: Bad Request - File not found');
+    }
+  });
+
   // ********************** DOWNLOAD FILES ***********************
   app.get('/assets', function(req, res) {
     var files = fs.readdirSync(__dirname +'/assets/');
