@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="stylesheet" href="css/dashboard.css" type="text/css" />
+
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<script>
 			var HOSTNAME = 'https://backend.lmbutler-ssa.net';
@@ -191,6 +193,14 @@
 				});
 			};
 
+			// $.ajax({
+			// 	url: HOSTNAME + "/visits?client_access_token=" + clientToken,
+			// 	data: null
+			// }).done(function() {
+
+			// })
+
+
 			function cmp(x, y) {
 			    return x > y ? 1 : x < y ? -1 : 0;
 			};
@@ -207,7 +217,7 @@
 				});
 
 				$("#dataHolder").html('');
-				var htmlChunk = '';
+				var htmlChunk = '<div class="visit">';
 
 				for (i = 0; i < visitsJSON.length; i++) {
 					var sDate = visitsJSON[i].start_time;
@@ -236,7 +246,13 @@
 					htmlChunk += '<div><span>Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visitsJSON[i].health_topics_accessed) + '</span></div>'
 					// htmlChunk += '<div><span>Child health assessment complete: </span><span class="cha">' +  + '</span></div>'
 
-					htmlChunk += '<br/>'
+					html += '</div>';
+
+					// formatting
+					if (calcVisitLength(visitsJSON[i].start_time, visitsJSON[i].end_time) != 'Incomplete or deleted') {
+						jQuery(htmlChunk).addClass('complete-visit');
+					}
+
 				}
 
 				$('#report-container').html(htmlChunk);
