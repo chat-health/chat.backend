@@ -1,6 +1,7 @@
 var _ = require('underscore');
 // XML capability
 var builder = require('xmlbuilder');
+var fs = require('fs');
 
 // Division of labour inspired by this article
 // https://stackoverflow.com/questions/13334051/divide-node-app-in-different-files
@@ -17,6 +18,26 @@ module.exports = function (app) {
     res.send('This will be the API used by the CHAT Android app for data syncing.\n Add /workers to retrieve all worker records. More to come');
   });
 
+  // ********************** DOWNLOAD FILES ***********************
+  app.get('/assets', function(req, res) {
+    var files = fs.readdirSync(__dirname +'/assets/');
+    return res.json(files);
+  });
+
+  app.get('/asset/:filename', function(req, res) {
+    var file = req.params.filename,
+      path = __dirname + '/assets/' + file;
+      // path = "~/Dropbox/_CHAT/5\ CHAT\ Tablet\ Assets/Videos/final/Videos\ Without\ Subtitles\ converted\ Tablet/" + file;
+
+    if (fs.existsSync(path)) {
+      return res.download(path, req.params.filename);
+    } else {
+      res.statusCode = 400;
+      return res.send('Error 400: Bad Request - File not found');
+    }
+  });
+
+  // ************************* PULL ******************************
 
   app.get('/clients', function(req, res) {
     handleGetAll(req, res);

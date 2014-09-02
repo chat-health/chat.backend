@@ -1,3 +1,4 @@
+/*jslint multistr: true */
 var jwt = require('jwt-simple');
 var googleapis = require('googleapis');
 var OAuth2Client = googleapis.OAuth2Client;
@@ -24,21 +25,24 @@ var ERROR_DATABASE_LOOKUP = {errorcode:2005,errormsg:'database problem during de
 
 var DB_Profile = {};
 
-function setErrorResponse(err,res)
-{
+function setErrorResponse(err,res) {
   console.log(err);
   res.statusCode=401;
   // set WWW-Authenticate header to avoid problems in Android app
   res.set({
     'Content-Type':'application/json',
-    'WWW-Authenticate': 'Basic realm="myRealm"'
+    // 'WWW-Authenticate': 'Basic realm="myRealm"'
+    'WWW-Authenticate': 'Digest realm="testrealm@host.com", \
+                 qop="auth,auth-int", \
+                 uri="/login" \
+                 nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", \
+                 opaque="5ccc069c403ebaf9f0171e9517f40e41"'
   });
 
   return res.json(err);
 }
 
-function getJWTToken(profile)
-{
+function getJWTToken(profile) {
   var token = jwt.encode(profile, JWT_SECRET_KEY);
   return token;
 }
@@ -143,32 +147,30 @@ var verifyGoogleToken = function (req, res) {
 // there have one more thing not sure, how to store the profiles
 // and do we have different access right among these profiles
 // right now, we just compare all the profile in the memory
-var verifyClientToken = function(req, res, next){
+var verifyClientToken = function(req, res, next) {
   // TODO to ignore the '/auth' url request
 
   //console.log(req.path);
-  if(req.path=="/auth")
-  {
+  if(req.path=="/auth") {
     console.log(req.path);
     next();
-	return;
+    return;
   }
-  if(req.path=="/login")
-  {
-	console.log(req.path);
-	next();
-	return;
+
+  if(req.path=="/login") {
+    console.log(req.path);
+    next();
+    return;
   }
-  if(req.path=="/dashboard")
-  {
-	console.log(req.path);
-	next();
-	return;
+
+  if(req.path=="/dashboard") {
+    console.log(req.path);
+    next();
+    return;
   }
 
   var clientToken = req.param(CLIENT_TOKEN_PARAMETER_NAME);
-  try
-  {
+  try {
     var userInfo = jwt.decode(clientToken, JWT_SECRET_KEY);
 
     var where = {'email': userInfo.email, 'google_access_token': userInfo.google_access_token};
@@ -205,60 +207,54 @@ var verifyClientToken = function(req, res, next){
     //  setErrorResponse(ERROR_CLIENT_TOKEN_NOT_VALID,res);
     //  return;
     // }
-  }
-  catch (err) {
+  } catch (err) {
     // handle the error safely
     console.log(err);
     setErrorResponse(ERROR_CLIENT_TOKEN_NOT_VALID,res);
-	return;
+    return;
   }
 };
 
-var loginFn = function(req,res,next)
-{
-	console.log(req.param(IS_SIGN_OUT_PARAMETER_NAME));
-	if(null!=req.param(IS_SIGN_OUT_PARAMETER_NAME)&&"true"==req.param(IS_SIGN_OUT_PARAMETER_NAME))
-	{
-		console.log("delete session");
-		req.session.clientToken=null;
-	}
-	console.log("in login handle");
-	var html_dir = './';
-	// routes to serve the static HTML files
-	res.status(200).sendfile(html_dir + 'auth.html');
-	return;
+var loginFn = function(req,res,next) {
+  console.log(req.param(IS_SIGN_OUT_PARAMETER_NAME));
+  if(null !== req.param(IS_SIGN_OUT_PARAMETER_NAME) && "true" === req.param(IS_SIGN_OUT_PARAMETER_NAME)) {
+    console.log("delete session");
+    req.session.clientToken = null;
+  }
+  console.log("in login handle");
+  var html_dir = './';
+  // routes to serve the static HTML files
+  res.status(200).sendfile(html_dir + 'auth.html');
+  return;
 };
 
-var dashboardFn = function(req,res,next)
-{
-	console.log("in dashboard handle");
-	var clientToken;
-	if(req.param(CLIENT_TOKEN_PARAMETER_NAME))
-	{
-		clientToken = req.param(CLIENT_TOKEN_PARAMETER_NAME);
-		console.log(clientToken);
-		req.session.clientToken=clientToken;
-	}
-	if(req.param(IS_REQUEST_CLIENT_TOKEN_PARAMETER_NAME))
-	{
-		if(req.session.clientToken)
-		{
-			clientToken=req.session.clientToken;
-			res.send(200, clientToken);
-			return;
-		}
-		if(null==clientToken||""==clientToken)
-		{
-			setErrorResponse(ERROR_CLIENT_TOKEN_NOT_VALID,res);
-			console.log("client token is null");
-			return;
-		}
-	}
+var dashboardFn = function(req,res,next) {
+  console.log("in dashboard handle");
+  var clientToken;
+  if(req.param(CLIENT_TOKEN_PARAMETER_NAME)) {
+    clientToken = req.param(CLIENT_TOKEN_PARAMETER_NAME);
+    console.log(clientToken);
+    req.session.clientToken=clientToken;
+  }
 
-	var html_dir = './';
-	// routes to serve the static HTML files
-	res.status(200).sendfile(html_dir + 'dashboard.html');
-	return;
+  if(req.param(IS_REQUEST_CLIENT_TOKEN_PARAMETER_NAME)) {
+    if(req.session.clientToken) {
+      clientToken=req.session.clientToken;
+      res.send(200, clientToken);
+      return;
+    }
+
+    if(null === clientToken || "" === clientToken) {
+      setErrorResponse(ERROR_CLIENT_TOKEN_NOT_VALID,res);
+      console.log("client token is null");
+      return;
+    }
+  }
+
+  var html_dir = './';
+  // routes to serve the static HTML files
+  res.status(200).sendfile(html_dir + 'dashboard.html');
+  return;
 };
 
 exports.verifyGoogleToken=verifyGoogleToken;
