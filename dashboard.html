@@ -3,6 +3,9 @@
 	<head>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+		<!-- CONFIRM THIS IS A STABLE LINK -->
+
 		<script>
 			var HOSTNAME = 'https://backend.lmbutler-ssa.net';
 			//var HOSTNAME = 'http://localhost:8000';
@@ -140,71 +143,39 @@
 				// -- time of day,
 				// -- duration of visit,
 				// -- health education topics clicked
-				// -- done or not
 				// -- services delivered
 				// -- health assessments done
+				// -- done or not
 
 				// so we need visits, households to start
 				// then eventually health_topics, services_accessed, CHA?
 
-				//jQuery.when(tryPullAll()).done(createOutput())
-
-				//var visitURL = HOSTNAME + "/visits?client_access_token="+clientToken;
-				$.ajax({
-					url: HOSTNAME + "/visits?client_access_token=" + clientToken,
-					data: null,
-					success: function(visitsJSON) {
-						$.ajax({
-							url: HOSTNAME + "/workers?client_access_token=" + clientToken,
-							data: null,
-							success: function(workersJSON) {
-								$.ajax({
-									url: HOSTNAME + "/services_accessed?client_access_token=" + clientToken,
-									data: null,
-									success: function(servicesAccessedJSON) {
-										populateHTML(visitsJSON, workersJSON, servicesAccessedJSON);
-									},
-									error: function(jqXHR, textStatus, errorThrown)
-									{
-										console.log(jqXHR);
-										console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
-										$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
-									},
-									dataType: "json"
-								});
-							},
-							error: function(jqXHR, textStatus, errorThrown)
-							{
-								console.log(jqXHR);
-								console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
-								$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
-							},
-							dataType: "json"
-						});
-					},
-					error: function(jqXHR, textStatus, errorThrown)
-					{
-						console.log(jqXHR);
-						console.log($.parseJSON(jqXHR.responseText)["errormsg"]);
-						$("#dataHolder").html($.parseJSON(jqXHR.responseText)["errormsg"]);
-					},
-					dataType: "json"
+				$.when( pullData('visits'),
+						pullData('workers'),
+						pullData('households'),
+						pullData('clients'),
+						pullData('services'),
+						pullData('services_accessed')
+				).done(function(visitsJSON, workersJSON, householdsJSON, clientsJSON, servicesJSON, servicesAccessedJSON){
+					populateHTML(visitsJSON[0], workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
 				});
 			};
 
-			// $.ajax({
-			// 	url: HOSTNAME + "/visits?client_access_token=" + clientToken,
-			// 	data: null
-			// }).done(function() {
+			// pullData('resources'),
+			// pullData('resources_accessed'),
+			// pullData('health_selects'),
+			// pullData('page_assessment1')
 
-			// })
-
+			function pullData(table) {
+				var url = HOSTNAME + "/" + table + "?client_access_token=" + clientToken;
+				return $.get(url);
+			};
 
 			function cmp(x, y) {
 			    return x > y ? 1 : x < y ? -1 : 0;
 			};
 
-			function populateHTML(visitsJSON, workersJSON, servicesAccessedJSON) {
+			function populateHTML(visitsJSON, workersJSON, householdsJSON, clientsJSON, servicesJSON, servicesAccessedJSON) {
 				// adapted from https://stackoverflow.com/questions/3230028/how-to-order-a-json-object-by-two-keys
 				visitsJSON.sort(function(a, b) {
 					aStart = new Date(a.start_time);
@@ -216,55 +187,147 @@
 				});
 
 				$("#dataHolder").html('');
-				var htmlChunk = '<div class="visit">';
+				var el = '<div>';
+				var htmlChunk = '';
 
-				for (i = 0; i < visitsJSON.length; i++) {
-					var sDate = visitsJSON[i].start_time;
+				_.each(visitsJSON, function(visit) {
+					var sDate = visit.start_time;
 					if (sDate != null) {
-						sDate = new Date(visitsJSON[i].start_time).toUTCString();
+						sDate = new Date(visit.start_time).toUTCString();
 					} else {
 						sDate = 'Unknown or null';
 					}
-					var eDate = visitsJSON[i].end_time;
+					var eDate = visit.end_time;
 					if (eDate != null) {
-						eDate = new Date(visitsJSON[i].end_time).toUTCString();
+						eDate = new Date(visit.end_time).toUTCString();
 					} else {
 						eDate = 'Unknown or null';
 					}
 
-					htmlChunk += '<div><span>Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visitsJSON[i].worker_id) + '</span></div>';
-					htmlChunk += '<div><span>Worker ID: </span><span class="worker-id">' + visitsJSON[i].worker_id + '</span></div>';
-					// htmlChunk += '<div><span>Household name: </span><span class="hh-name">' +  + '</span></div>';
-					htmlChunk += '<div><span>Household ID: </span><span class="hh-id">' + visitsJSON[i].hh_id + '</span></div>'
-					htmlChunk += '<div><span>Start time: </span><span class="start-time">' + sDate + '</span></div>'
-					htmlChunk += '<div><span>End time: </span><span class="end-time">' + eDate + '</span></div>'
-					htmlChunk += '<div><span>Visit duration: </span><span class="duration">' + calcVisitLength(visitsJSON[i].start_time, visitsJSON[i].end_time) + '</span></div>'
-					htmlChunk += '<div><span>Number of clients attending: </span><span class="attendance">' + visitsJSON[i].attendance.length + '</span></div>'
-					// htmlChunk += '<div><span>Number of children under 5 attending: </span><span class="attendance-under-five>' +  + '</span></div>'
-					htmlChunk += '<div><span>Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, visitsJSON[i]._id) + '</span></div>'
-					htmlChunk += '<div><span>Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visitsJSON[i].health_topics_accessed) + '</span></div>'
-					// htmlChunk += '<div><span>Child health assessment complete: </span><span class="cha">' +  + '</span></div>'
-
-					html += '</div>';
-
 					// formatting
-					if (calcVisitLength(visitsJSON[i].start_time, visitsJSON[i].end_time) != 'Incomplete or deleted') {
-						jQuery(htmlChunk).addClass('complete-visit');
+					if (calcVisitLength(visit.start_time, visit.end_time) == 'Incomplete or deleted') {
+						htmlChunk += '<div class="visit incomplete">';
+					} else {
+						htmlChunk += '<div class="visit complete">';
 					}
 
-				}
 
-				$('#report-container').html(htmlChunk);
+					htmlChunk += '<div><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Start time: </span><span class="start-time">' + sDate + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">End time: </span><span class="end-time">' + eDate + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Number of clients attending: </span><span class="attendance">' + visit.attendance.length + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
+					htmlChunk += '<div><span class="report-row-header">Child health assessment and immunization: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
+
+					htmlChunk += '</div><br />';
+				});
+
+				el += htmlChunk;
+				el += '</div>';
+				$('#report-container').html(el);
 			}
 
 			function getWorkerName(json, id) {
-				var name = '';
-				$.each(json, function(i) {
-					if (json[i]._id == id) {
-						name = json[i].first_name + ' ' + json[i].last_name;
+				var worker = _.findWhere(json, {_id: id});
+				return worker.first_name + ' ' + worker.last_name;
+			}
+
+			function getHouseholdName(json, id) {
+				var household = _.findWhere(json, {_id: id});
+				return household.hh_name;
+			}
+
+			function getNumberAttendingUnderFive(clients, visit) {
+				// go through each of the attendanceIds, find the corresponding client dob, compare to visitDate, add to array if less than 5 years
+
+				var attClients = _.filter(clients, function(c) {
+				    return _.contains(visit.attendance,c._id);
+				});
+
+				var attUnderFive = [];
+				_.each(attClients, function(c) {
+					if (getAge(visit.start_time, c.date_of_birth) <= 5) {
+						attUnderFive.push(c);
 					}
 				});
-				return name;
+
+				return attUnderFive.length;
+			}
+
+			// think about doing a getXsforY function with generalized parameters - and fix up the ones below
+
+			function getServicesAccessed(sAJSON, servicesJSON, visit_id) {
+				var servicesStr = '';
+				_.each(sAJSON, function(sa) {
+					if (sa.visit_id == visit_id) {
+						servicesStr += sa.service_id;
+						servicesStr += ' (';
+						servicesStr += _.findWhere(servicesJSON, {_id: sa.service_id}).en_name;
+						servicesStr += '), ';
+					}
+				});
+
+				if (servicesStr.length > 0) {
+					servicesStr = servicesStr.substr(0, servicesStr.length-2);
+					return servicesStr;
+				} else {
+					return 'None';
+				}
+			}
+
+			function getHealthTopicsCompleted(htaArray) {
+				if (htaArray.length == 0) {
+					return 'None';
+				} else {
+					var htaStr = '';
+					_.each(htaArray, function(hta) {
+						htaStr += hta.topic_name;
+						if (hta.end_time == null || hta.end_time == "") {
+							htaStr += ' (incomplete)';
+						}
+						htaStr += ', ';
+					});
+
+					if (htaStr.length > 0) {
+						htaStr = htaStr.substr(0, htaStr.length-2);
+					}
+
+					return htaStr;
+				}
+			}
+
+			function getCHACompleteStatus(visit) {
+				var chaComStr = '';
+				_.each(visit.cha_access, function(chaAcc) {
+					if (chaAcc.type === "health") {
+						if (chaAcc.end_time == null || chaAcc.end_time == "") {
+							chaComStr += "Health started but incomplete";
+						} else {
+							chaComStr += "Health complete";
+						}
+					} else if (chaAcc.type == "immunization") {
+						if (chaAcc.end_time == null || chaAcc.end_time == "") {
+							chaComStr += "Immunization started but incomplete";
+						} else {
+							chaComStr += "Immunization complete";
+						}
+					}
+					chaComStr += ' & ';
+				});
+
+				if (chaComStr.length > 0) {
+					chaComStr = chaComStr.substr(0, chaComStr.length-3);
+				} else {
+					chaComStr += 'Child health assessment section not accessed';
+				}
+
+				return chaComStr;
 			}
 
 			function calcVisitLength(startTime, endTime) {
@@ -282,56 +345,35 @@
 			    s -= h*3600;
 			    var m = Math.floor(s/60); //Get remaining minutes
 			    s -= m*60;
-			    return h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s); //zero padding on minutes and second
+			    return (h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s)).substr(0,8); //zero padding on minutes and second, then cutting the trailing digits - probably a way nicer way to do this with floor
 			}
 
-			function getServicesAccessed(json, visit_id) {
-				var servicesStr = '';
-				$.each(json, function(i) {
-					if (json[i].visit_id == visit_id) {
-						servicesStr += json[i].service_id;
-						servicesStr += ', ';
-					}
-				});
-
-				if (servicesStr.length > 0) {
-					servicesStr = servicesStr.substr(0, servicesStr.length-2);
-					return servicesStr;
-				} else {
-					return 'None';
-				}
+			function getAge(visitDate, dob) {
+				var visitDateMS = new Date(visitDate);
+				var dobMS = new Date(dob);
+				var ms = new Date(visitDate) - new Date(dob);
+				var ageDate = new Date(ms); // miliseconds from epoch
+				return Math.abs(ageDate.getUTCFullYear() - 1970);
 			}
-
-			function getHealthTopicsCompleted(htaArray) {
-				if (htaArray.length == 0) {
-					return 'None';
-				} else {
-					var htaStr = '';
-					$.each(htaArray, function(i) {
-						if (htaArray[i].end_time != null && htaArray[i].end_time != "") {
-							htaStr += htaArray[i].topic_name;
-							htaStr += ', ';
-						}
-					});
-
-					if (htaStr.length > 0) {
-						htaStr = htaStr.substr(0, htaStr.length-2);
-					}
-
-					return htaStr;
-				}
-
-			}
-
 
 		</script>
+		<style>
+			.report-row-header {
+				font-weight: bold;
+			}
+			.incomplete {
+				color: #c3c3c3;
+			}
+		</style>
 	</head>
 	<body>
-		<table cellpadding="5">
-		  <tr>
-			<td><button type="button" onClick='generateReport()'>Generate Report</button></td>
-			<td>
-				<span>Table: </span>
+		<span style="float:right; width:100px; "><button type="button" onClick='signOut();'>Sign Out</button></span>
+
+		<div style="padding:5px">
+			<div style="margin: 10px 0px 40px 0px;"><button style="width: 190px; height: 65px; font-size: 20px;" type="button" onClick='generateReport()'>Generate Visit Report</button></div>
+
+			<div>
+				<div>View specific table data: </div>
 				<select id="dataSelector" onchange="showData()">
 				  <option value="attendance">attendance</option>
 				  <option value="clients">clients</option>
@@ -356,15 +398,14 @@
 				  <option value="visits">visits</option>
 				  <option value="workers">workers</option>
 				</select>
-			</td>
-			<td>
-				<span>Sort by: </span>
+
+				<div>Sort table data by: </div>
 				<select id="sortCriteria" onchange="sortData()">
 				  <option value="_id">id</option>
 				  <option value="created_at">created_at</option>
 				  <option value="modified_at">modified_at</option>
 				</select>
-			</td>
+			</div>
 <!-- 			<td>
 				<span>Format: </span>
 				<select id="formatCriteria" onchange="sortData()">
@@ -372,16 +413,18 @@
 				  <option value="xml">xml</option>
 				</select>
 			</td> -->
-			<td><button type="button" onClick='signOut();'>Sign Out</button></td>
-		  </tr>
-		  <tr>
-			<td colspan="2">
-				<pre id="dataHolder" style="word-wrap: break-word; white-space: pre-wrap;"></pre>
-			</td>
-		  </tr>
-		</table>
 
-		<div id="report-container">
+		  </div>
+
+
+		  <div>
+<!-- 			<td colspan="2"> -->
+				<pre id="dataHolder" style="word-wrap: break-word; white-space: pre-wrap;"></pre>
+<!-- 			</td> -->
+		  </div>
+		</div>
+
+		<div id="report-container" style="margin-top: 10px; border: 1px solid black; padding: 10px;">
 
 		</div>
 

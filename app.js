@@ -13,6 +13,7 @@ app.configure(function() {
   app.use(express.session({secret: "90ndsj9dfdsf"}));
   app.use("/auth",auth.verifyGoogleToken);
   app.use(auth.verifyClientToken);
+
   // add login page
   app.use("/login",auth.loginFn);
   app.use("/dashboard",auth.dashboardFn);
