@@ -3,7 +3,7 @@
 	<head>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
 		<!-- CONFIRM THIS IS A STABLE LINK -->
 
 		<script>
@@ -260,15 +260,19 @@
 				return attUnderFive.length;
 			}
 
-			// think about doing a getXsforY function with generalized parameters - and fix up the ones below
-
 			function getServicesAccessed(sAJSON, servicesJSON, visit_id) {
 				var servicesStr = '';
 				_.each(sAJSON, function(sa) {
 					if (sa.visit_id == visit_id) {
 						servicesStr += sa.service_id;
 						servicesStr += ' (';
-						servicesStr += _.findWhere(servicesJSON, {_id: sa.service_id}).en_name;
+						service = _.findWhere(servicesJSON, {_id: sa.service_id});
+						if (service) {
+							servicesStr += service.en_name;
+						} else {
+							servicesStr += 'unknown service'; 
+						}						
+//servicesStr += _.findWhere(servicesJSON, {_id: sa.service_id}).en_name;
 						servicesStr += '), ';
 					}
 				});
