@@ -212,18 +212,18 @@
 					}
 
 
-					htmlChunk += '<div><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Start time: </span><span class="start-time">' + sDate + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">End time: </span><span class="end-time">' + eDate + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Number of clients attending: </span><span class="attendance">' + visit.attendance.length + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
-					htmlChunk += '<div><span class="report-row-header">Child health assessment and immunization: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sDate + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + eDate + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance">' + visit.attendance.length + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Child health assessment and immunization: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
 
 					htmlChunk += '</div><br />';
 				});
@@ -231,6 +231,23 @@
 				el += htmlChunk;
 				el += '</div>';
 				$('#report-container').html(el);
+
+				// hide all of the incomplete visits so that they are expandable
+				jQuery('.incomplete').addClass('hidden');
+				jQuery('.incomplete').append('<div class="expanding-div">+</div>');
+				jQuery('.incomplete .hideable').hide();
+
+				jQuery('.incomplete').click(function() {
+					if (jQuery(this).hasClass('hidden')) {
+						jQuery(this).removeClass('hidden');
+						jQuery('.expanding-div',this).remove();
+						jQuery('.hideable',this).show();
+					} else {
+						jQuery(this).addClass('hidden');
+						jQuery(this).append('<div class="expanding-div">+</div>');
+						jQuery('.hideable',this).hide();
+					}
+				})
 			}
 
 			function getWorkerName(json, id) {
