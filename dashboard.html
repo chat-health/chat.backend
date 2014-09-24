@@ -134,23 +134,7 @@
 			}
 
 			function generateReport() {
-				//pullData();
-				// -- household name
-				// -- total number in attendance
-				// -- number of kids<5 in attendance
-				// -- household ID
-				// -- day,
-				// -- time of day,
-				// -- duration of visit,
-				// -- health education topics clicked
-				// -- services delivered
-				// -- health assessments done
-				// -- done or not
-
-				// so we need visits, households to start
-				// then eventually health_topics, services_accessed, CHA?
-
-				jQuery('#loading-64').show();
+				jQuery('#loading-text').show();
 
 				$.when( pullData('visits'),
 						pullData('workers'),
@@ -159,15 +143,10 @@
 						pullData('services'),
 						pullData('services_accessed')
 				).done(function(visitsJSON, workersJSON, householdsJSON, clientsJSON, servicesJSON, servicesAccessedJSON){
-					jQuery('#loading-64').hide();
+					jQuery('#loading-text').hide();
 					populateHTML(visitsJSON[0], workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
 				});
 			};
-
-			// pullData('resources'),
-			// pullData('resources_accessed'),
-			// pullData('health_selects'),
-			// pullData('page_assessment1')
 
 			function pullData(table) {
 				var url = HOSTNAME + "/" + table + "?client_access_token=" + clientToken;
@@ -298,7 +277,6 @@
 
 			function getNumberAttendingUnderFive(clients, visit) {
 				// go through each of the attendanceIds, find the corresponding client dob, compare to visitDate, add to array if less than 5 years
-
 				var attClients = _.filter(clients, function(c) {
 				    return _.contains(visit.attendance,c._id);
 				});
@@ -325,7 +303,6 @@
 						} else {
 							servicesStr += 'unknown service';
 						}
-//servicesStr += _.findWhere(servicesJSON, {_id: sa.service_id}).en_name;
 						servicesStr += '), ';
 					}
 				});
@@ -434,7 +411,7 @@
 		</style>
 	</head>
 	<body>
-		<div id="loading-64" style="font-size: 30px; margin-top: 10%; margin-bottom: 80%; margin-left:45%; display: none">Loading...</div>
+		<div id="loading-text" style="font-size: 30px; margin-top: 10%; margin-bottom: 80%; margin-left:45%; display: none">Loading...</div>
 		<span style="float:right; width:100px; "><button type="button" onClick='signOut();'>Sign Out</button></span>
 
 		<div style="padding:5px">
