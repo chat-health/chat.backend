@@ -150,6 +150,8 @@
 				// so we need visits, households to start
 				// then eventually health_topics, services_accessed, CHA?
 
+				jQuery('#loading-64').show();
+
 				$.when( pullData('visits'),
 						pullData('workers'),
 						pullData('households'),
@@ -157,6 +159,7 @@
 						pullData('services'),
 						pullData('services_accessed')
 				).done(function(visitsJSON, workersJSON, householdsJSON, clientsJSON, servicesJSON, servicesAccessedJSON){
+					jQuery('#loading-64').hide();
 					populateHTML(visitsJSON[0], workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
 				});
 			};
@@ -426,6 +429,7 @@
 		</style>
 	</head>
 	<body>
+		<div id="loading-64" style="font-size: 30px; margin-top: 10%; margin-bottom: 80%; margin-left:45%; display: none">Loading...</div>
 		<span style="float:right; width:100px; "><button type="button" onClick='signOut();'>Sign Out</button></span>
 
 		<div style="padding:5px">
