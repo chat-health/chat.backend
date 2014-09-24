@@ -190,6 +190,8 @@
 				var el = '<div>';
 				var htmlChunk = '';
 
+				var csvStr = 'Worker name,Worker ID,Household name,Household ID,Start time,End time,Visit duration,Number of clients attending,Number of children under 5 attending, Services delivered, Health topics completed, Child health assessment, Immunization';
+
 				_.each(visitsJSON, function(visit) {
 					var sDate = visit.start_time;
 					if (sDate != null) {
@@ -211,7 +213,6 @@
 						htmlChunk += '<div class="visit complete">';
 					}
 
-
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
@@ -219,13 +220,19 @@
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sDate + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + eDate + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance">' + visit.attendance.length + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Child health assessment and immunization: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Child health assessment: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Immunization: </span><span class="immunization">' + getImmunizationCompleteStatus(visit) + '</span></div>'
 
 					htmlChunk += '</div><br />';
+
+					// will need to build a sanitzer here to remove commas
+					// START HERE - add attendingClients, remove commas from the various multilist items, sanitize all, create DL button
+					csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +','+visit.worker_id+','+getHouseholdName(householdsJSON, visit.hh_id) +','+visit.hh_id+','+sDate+','+eDate+','+calcVisitLength(visit.start_time, visit.end_time)+','+visit.attendance.length+','+getNumberAttendingUnderFive(clientsJSON, visit)+','+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+','+getHealthTopicsCompleted(visit.health_topics_accessed)+','+getCHACompleteStatus(visit)+','+getImmunizationCompleteStatus(visit);
 				});
 
 				el += htmlChunk;
@@ -260,6 +267,27 @@
 				return household.hh_name;
 			}
 
+			function getAttendingClients(clients, visit) {
+				var clientsStr = '';
+				var attClients = _.filter(clients, function(c) {
+				    return _.contains(visit.attendance,c._id);
+				});
+
+				_.each(attClients, function(client) {
+					clientsStr += client.first_name;
+					clientsStr += ' '
+					clientsStr += client.last_name;
+					clientsStr += ', ';
+				});
+
+				if (clientsStr.length > 0) {
+					clientsStr = clientsStr.substr(0, clientsStr.length-2);
+					return clientsStr;
+				} else {
+					return 'None';
+				}
+			}
+
 			function getNumberAttendingUnderFive(clients, visit) {
 				// go through each of the attendanceIds, find the corresponding client dob, compare to visitDate, add to array if less than 5 years
 
@@ -287,8 +315,8 @@
 						if (service) {
 							servicesStr += service.en_name;
 						} else {
-							servicesStr += 'unknown service'; 
-						}						
+							servicesStr += 'unknown service';
+						}
 //servicesStr += _.findWhere(servicesJSON, {_id: sa.service_id}).en_name;
 						servicesStr += '), ';
 					}
@@ -328,27 +356,37 @@
 				_.each(visit.cha_access, function(chaAcc) {
 					if (chaAcc.type === "health") {
 						if (chaAcc.end_time == null || chaAcc.end_time == "") {
-							chaComStr += "Health started but incomplete";
+							chaComStr += "Child health assessment started but incomplete";
 						} else {
-							chaComStr += "Health complete";
-						}
-					} else if (chaAcc.type == "immunization") {
-						if (chaAcc.end_time == null || chaAcc.end_time == "") {
-							chaComStr += "Immunization started but incomplete";
-						} else {
-							chaComStr += "Immunization complete";
+							chaComStr += "Child health assessment complete";
 						}
 					}
-					chaComStr += ' & ';
 				});
 
-				if (chaComStr.length > 0) {
-					chaComStr = chaComStr.substr(0, chaComStr.length-3);
-				} else {
+				if (chaComStr.length === 0) {
 					chaComStr += 'Child health assessment section not accessed';
 				}
 
 				return chaComStr;
+			}
+
+			function getImmunizationCompleteStatus(visit) {
+				var immComStr = '';
+				_.each(visit.cha_access, function(chaAcc) {
+					if (chaAcc.type == "immunization") {
+						if (chaAcc.end_time == null || chaAcc.end_time == "") {
+							immComStr += "Immunization started but incomplete";
+						} else {
+							immComStr += "Immunization complete";
+						}
+					}
+				});
+
+				if (immComStr.length === 0) {
+					immComStr = 'Immunization section not accessed';
+				}
+
+				return immComStr;
 			}
 
 			function calcVisitLength(startTime, endTime) {
