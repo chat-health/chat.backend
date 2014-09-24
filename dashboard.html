@@ -193,7 +193,7 @@
 				var el = '<div>';
 				var htmlChunk = '';
 
-				var csvStr = 'Worker name,Worker ID,Household name,Household ID,Start time,End time,Visit duration,Number of clients attending,Number of children under 5 attending, Services delivered, Health topics completed, Child health assessment, Immunization';
+				var csvStr = 'Worker name|Worker ID|Household name|Household ID|Start time|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending| Services delivered| Health topics completed|Child health assessment|Immunization';
 
 				_.each(visitsJSON, function(visit) {
 					var sDate = visit.start_time;
@@ -223,7 +223,7 @@
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sDate + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + eDate + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending: </span><span class="attendance">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
@@ -235,7 +235,7 @@
 
 					// will need to build a sanitzer here to remove commas
 					// START HERE - add attendingClients, remove commas from the various multilist items, sanitize all, create DL button
-					csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +','+visit.worker_id+','+getHouseholdName(householdsJSON, visit.hh_id) +','+visit.hh_id+','+sDate+','+eDate+','+calcVisitLength(visit.start_time, visit.end_time)+','+visit.attendance.length+','+getNumberAttendingUnderFive(clientsJSON, visit)+','+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+','+getHealthTopicsCompleted(visit.health_topics_accessed)+','+getCHACompleteStatus(visit)+','+getImmunizationCompleteStatus(visit);
+					csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+sDate+'|'+eDate+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
 				});
 
 				el += htmlChunk;
@@ -257,7 +257,12 @@
 						jQuery(this).append('<div class="expanding-div">+</div>');
 						jQuery('.hideable',this).hide();
 					}
-				})
+				});
+
+				jQuery('#download-report-btn').show();
+				jQuery('#download-report-btn').click(function() {
+					window.open('data:text/csv,' + encodeURIComponent(csvStr));
+				});
 			}
 
 			function getWorkerName(json, id) {
@@ -487,8 +492,9 @@
 		  </div>
 		</div>
 
+		<button id="download-report-btn" style="display:none; float:right; margin-top:8px; margin-right:10px">Download as csv</button>
 		<div id="report-container" style="margin-top: 10px; border: 1px solid black; padding: 10px;">
-
+			<!-- I GET FILLED BY REPORT GEN AND DROPDOWNS -->
 		</div>
 
 	</body>
