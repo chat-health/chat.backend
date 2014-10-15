@@ -172,35 +172,50 @@
 				var el = '<div>';
 				var htmlChunk = '';
 
-				var csvStr = 'Worker name|Worker ID|Household name|Household ID|Start time|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending| Services delivered| Health topics completed|Child health assessment|Immunization';
+				var csvStr = 'Worker name|Worker ID|Household name|Household ID|Completion status|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending| Services delivered| Health topics completed|Child health assessment|Immunization';
 
 				_.each(visitsJSON, function(visit) {
-					var sDate = visit.start_time;
-					if (sDate != null) {
-						sDate = new Date(visit.start_time).toUTCString();
+					var sDate, sTime;
+					if (visit.start_time != null) {
+						var d = new Date(visit.start_time);
+						sDate = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+						sTime = d.getHours() + ':' + d.getMinutes();
 					} else {
 						sDate = 'Unknown or null';
+						sTime = 'Unknown or null';
 					}
-					var eDate = visit.end_time;
-					if (eDate != null) {
-						eDate = new Date(visit.end_time).toUTCString();
+					var eDate, eTime;
+					if (visit.end_time != null) {
+						var d = new Date(visit.end_time);
+						eDate = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+						eTime = d.getHours() + ':' + d.getMinutes();
 					} else {
 						eDate = 'Unknown or null';
+						eTime = 'Unknown or null';
 					}
 
-					// formatting
-					if (calcVisitLength(visit.start_time, visit.end_time) == 'Incomplete or deleted') {
-						htmlChunk += '<div class="visit incomplete">';
-					} else {
+
+					// order obviously matters here, don't mess with it
+					var completeStatus = '';
+					if (calcVisitLength(visit.start_time, visit.end_time) !== "Incomplete or deleted") {
 						htmlChunk += '<div class="visit complete">';
+						completeStatus = "Complete";
+					} else if (checkSemiCompleteStatus(visit, servicesAccessedJSON, servicesJSON) === "Semi-complete") {
+						htmlChunk += '<div class="visit semi-complete">';
+						completeStatus = "Semi-complete";
+					} else {
+						htmlChunk += '<div class="visit incomplete">';
+						completeStatus = "Incomplete or deleted";
 					}
 
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sDate + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + eDate + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Start date: </span><span class="start-date">' + sDate + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sTime + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + eDate + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + eTime + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending: </span><span class="attendance">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
@@ -212,9 +227,7 @@
 
 					htmlChunk += '</div><br />';
 
-					// will need to build a sanitzer here to remove commas
-					// START HERE - add attendingClients, remove commas from the various multilist items, sanitize all, create DL button
-					csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+sDate+'|'+eDate+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
+					csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+completeStatus+'|'+sDate+'|'+sTime+'|'+eDate+'|'+eTime+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
 				});
 
 				el += htmlChunk;
@@ -290,6 +303,19 @@
 
 				return attUnderFive.length;
 			}
+
+			function checkSemiCompleteStatus(visit, sAJSON, servicesJSON, htaArray) {
+				var status = '';
+
+				if (getServicesAccessed(sAJSON, servicesJSON, visit._id) !== "None" && getHealthTopicsCompleted(visit.health_topics_accessed) !== "None") {
+					status = "Semi-complete";
+				} else {
+					status = "Not Semi-complete";
+				}
+
+				return status;
+			}
+
 
 			function getServicesAccessed(sAJSON, servicesJSON, visit_id) {
 				var servicesStr = '';
@@ -404,6 +430,9 @@
 		<style>
 			.report-row-header {
 				font-weight: bold;
+			}
+			.semi-complete {
+				color: #D6A9A9;
 			}
 			.incomplete {
 				color: #c3c3c3;
