@@ -179,7 +179,7 @@
 					if (visit.start_time != null) {
 						var d = new Date(visit.start_time);
 						sDate = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
-						sTime = d.getHours() + ':' + d.getMinutes();
+						sTime = d.getHours() + ':' + ('0'+d.getMinutes()).slice(-2);
 					} else {
 						sDate = 'Unknown or null';
 						sTime = 'Unknown or null';
@@ -188,7 +188,7 @@
 					if (visit.end_time != null) {
 						var d = new Date(visit.end_time);
 						eDate = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
-						eTime = d.getHours() + ':' + d.getMinutes();
+						eTime = d.getHours() + ':' + ('0'+d.getMinutes()).slice(-2);
 					} else {
 						eDate = 'Unknown or null';
 						eTime = 'Unknown or null';
@@ -212,6 +212,7 @@
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Completion status: </span><span class="complete-status">' + completeStatus + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Start date: </span><span class="start-date">' + sDate + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sTime + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + eDate + '</span></div>';
