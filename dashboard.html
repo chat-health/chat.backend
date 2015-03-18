@@ -144,7 +144,7 @@
 						pullData('services_accessed')
 				).done(function(visitsJSON, workersJSON, householdsJSON, clientsJSON, servicesJSON, servicesAccessedJSON){
 					jQuery('#loading-text').hide();
-					populateHTML(visitsJSON[0], workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
+					populateHTML(cleanVisits(visitsJSON[0]), workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
 				});
 			};
 
@@ -172,13 +172,14 @@
 				var el = '<div>';
 				var htmlChunk = '';
 
-				var csvStr = 'Worker name|Worker ID|Household name|Household ID|Completion status|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending| Services delivered| Health topics completed|Child health assessment|Immunization';
+				var csvStr = 'Visit ID|Worker name|Worker ID|Household name|Household ID|Completion status|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending|Services delivered|Health topics completed';
 
 				_.each(visitsJSON, function(visit) {
 					var sDate, sTime;
 					if (visit.start_time != null) {
 						var d = new Date(visit.start_time);
-						sDate = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+						// note that cause the date object is such a mess, we need to add one to month (Jan = 0)
+						sDate = d.getFullYear() + '-' + d.getMonth()+1 + '-' + d.getDate();
 						sTime = d.getHours() + ':' + ('0'+d.getMinutes()).slice(-2);
 					} else {
 						sDate = 'Unknown or null';
@@ -187,7 +188,7 @@
 					var eDate, eTime;
 					if (visit.end_time != null) {
 						var d = new Date(visit.end_time);
-						eDate = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+						eDate = d.getFullYear() + '-' + d.getMonth()+1 + '-' + d.getDate();
 						eTime = d.getHours() + ':' + ('0'+d.getMinutes()).slice(-2);
 					} else {
 						eDate = 'Unknown or null';
@@ -208,6 +209,7 @@
 						completeStatus = "Incomplete or deleted";
 					}
 
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit ID: </span><span class="visit_id">' + visit._id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
@@ -223,13 +225,38 @@
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Child health assessment: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Immunization: </span><span class="immunization">' + getImmunizationCompleteStatus(visit) + '</span></div>'
+					// htmlChunk += '<div class="hideable"><span class="report-row-header">Child health assessment: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
+					// htmlChunk += '<div class="hideable"><span class="report-row-header">Immunization: </span><span class="immunization">' + getImmunizationCompleteStatus(visit) + '</span></div>'
 
 					htmlChunk += '</div><br />';
 
-					csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+completeStatus+'|'+sDate+'|'+sTime+'|'+eDate+'|'+eTime+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
+					csvStr += '\n'+visit._id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+completeStatus+'|'+sDate+'|'+sTime+'|'+eDate+'|'+eTime+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
 				});
+
+
+
+
+
+				/*
+					TO FIX:
+					- visits need to be combined into one visit if on same date
+					- all comma separated values need to be separated out into multiple columns
+					- check times, maybe fix (times are UTC)
+					- check dates, update month (FIXED)
+					- do something with immunization and cha
+					- clients attending, clients attending under 5, numbers of each
+					- figure out services delivered, this is a very big mess
+				*/
+
+				// var csvStr = 'Worker name|Worker ID|Household name|Household ID|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending| Services delivered| Health topics completed|Child health assessment|Immunization';
+
+				// csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+sDate+'|'+sTime+'|'+eDate+'|'+eTime+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
+
+
+
+
+
+
 
 				el += htmlChunk;
 				el += '</div>';
@@ -256,6 +283,12 @@
 				jQuery('#download-report-btn').click(function() {
 					window.open('data:text/csv,' + encodeURIComponent(csvStr));
 				});
+			}
+
+
+			// this function will concatenate all visits on the same day (same worker, HH, jesus this is hard)
+			function cleanVisits(visitsJSON) {
+				return visitsJSON;
 			}
 
 			function getWorkerName(json, id) {

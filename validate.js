@@ -1,3 +1,5 @@
+// clients and households need to have their _ids changed to strings. Can be copied to the server like that
+
 var _ = require('underscore');
 var fs = require('fs');
 
