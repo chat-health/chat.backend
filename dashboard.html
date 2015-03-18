@@ -179,7 +179,8 @@
 					if (visit.start_time != null) {
 						var d = new Date(visit.start_time);
 						// note that cause the date object is such a mess, we need to add one to month (Jan = 0)
-						sDate = d.getFullYear() + '-' + d.getMonth()+1 + '-' + d.getDate();
+						var month = d.getMonth()+1;
+						sDate = d.getFullYear() + '-' + month + '-' + d.getDate();
 						sTime = d.getHours() + ':' + ('0'+d.getMinutes()).slice(-2);
 					} else {
 						sDate = 'Unknown or null';
@@ -188,7 +189,8 @@
 					var eDate, eTime;
 					if (visit.end_time != null) {
 						var d = new Date(visit.end_time);
-						eDate = d.getFullYear() + '-' + d.getMonth()+1 + '-' + d.getDate();
+						var month = d.getMonth()+1;
+						eDate = d.getFullYear() + '-' + month + '-' + d.getDate();
 						eTime = d.getHours() + ':' + ('0'+d.getMinutes()).slice(-2);
 					} else {
 						eDate = 'Unknown or null';
