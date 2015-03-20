@@ -9,10 +9,10 @@ app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   // to disable security disable these lines
-  app.use(session({ secret: 'chat_Monkey', cookie: { maxAge: 60000 },resave: true,saveUninitialized: true,}));
-  app.use(express.session({secret: "90ndsj9dfdsf"}));
-  app.use("/auth",auth.verifyGoogleToken);
-  app.use(auth.verifyClientToken);
+  // app.use(session({ secret: 'chat_Monkey', cookie: { maxAge: 60000 },resave: true,saveUninitialized: true,}));
+  // app.use(express.session({secret: "90ndsj9dfdsf"}));
+  // app.use("/auth",auth.verifyGoogleToken);
+  // app.use(auth.verifyClientToken);
 
   // add login page
   app.use("/login",auth.loginFn);
