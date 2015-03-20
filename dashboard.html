@@ -206,11 +206,13 @@
 					var friends = _.where(visitsJSON, { worker_id: visit.worker_id, hh_id: visit.hh_id, parsed_start_date: visit.parsed_start_date });
 					// *** NB: all visits are Home Visits by Home Care Volunteers (but will this always be true) ***
 					var cVisitId = '';
-					var idArray = [], startTimeArray = [], endTimeArray = [], latArray = [], lonArray = [], attendanceArray = [], chaAccessedArray = [], hsrArray = [], htaArray = [], vaArray = [];
+					var idArray = [], startUniversalArray = [], endUniversalArray = [], startTimeArray = [], endTimeArray = [], latArray = [], lonArray = [], attendanceArray = [], chaAccessedArray = [], hsrArray = [], htaArray = [], vaArray = [];
 					// look into _.unzip - does exactly what we need here
 					_.each(friends, function(f) {
 						cVisitId += f._id;
 						idArray.push(f._id);
+						startUniversalArray.push(f.start_time);
+						endUniversalArray.push(f.end_time);
 						startTimeArray.push(f.parsed_start_time);
 						endTimeArray.push(f.parsed_end_time);
 						latArray.push(f.lat);
@@ -239,8 +241,8 @@
 						'_id': idArray,
 						'worker_id': visit.worker_id,
 						'hh_id': visit.hh_id,
-						'start_universal': visit.start_time,
-						'end_universal': visit.end_time,
+						'start_universal': startUniversalArray,
+						'end_universal': endUniversalArray,
 						'start_date': visit.parsed_start_date,
 						'start_time': startTimeArray,
 						'end_date': visit.parsed_end_date,
@@ -329,7 +331,7 @@
 
 						// order obviously matters here, don't mess with it
 						var completeStatus = '';
-						if (calcVisitLength(visit.start_universal, visit.end_universal) !== "Incomplete or deleted") {
+						if (calcVisitLength(visit.start_universal[0], _.last(visit.end_universal)) !== "Incomplete or deleted") {
 							htmlChunk += '<div class="visit complete">';
 							completeStatus = "Complete";
 						} else if (checkSemiCompleteStatus(visit, servicesAccessedJSON, servicesJSON) === "Semi-complete") {
@@ -352,7 +354,7 @@
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + fakeST + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + visit.end_date + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + fakeET + '</span></div>';
-						htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_universal, visit.end_universal) + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_universal[0], _.last(visit.end_universal)) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending IDs: </span><span class="attendance-id">' + visit.attendance + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending names: </span><span class="attendance-name">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
@@ -364,7 +366,7 @@
 
 						htmlChunk += '</div><br />';
 
-						csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+_.chain(visit.lat).compact().first().value()+'|'+_.chain(visit.lon).compact().first().value()+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(visit.start_universal, visit.end_universal)+'|'+visit.attendance+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
+						csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+_.chain(visit.lat).compact().first().value()+'|'+_.chain(visit.lon).compact().first().value()+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(visit.start_universal[0], _.last(visit.end_universal))+'|'+visit.attendance+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
 					}
 				});
 
