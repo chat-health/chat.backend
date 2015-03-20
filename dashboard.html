@@ -305,6 +305,8 @@
 					- dups have been removed from attendance, cha_accessed, health_selects_recorded, health_topics_accessed
 				*/
 
+				// TODO - clean up the way date and time are dealt with. Starting to get out of control
+
 				$("#dataHolder").html('');
 				var el = '<div>';
 				var htmlChunk = '';
@@ -355,7 +357,7 @@
 						htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + visit.end_date + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + fakeET + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_universal[0], _.last(visit.end_universal)) + '</span></div>';
-						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending IDs: </span><span class="attendance-id">' + visit.attendance + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending IDs: </span><span class="attendance-id">' + arrayToString(visit.attendance) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending names: </span><span class="attendance-name">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
@@ -366,7 +368,7 @@
 
 						htmlChunk += '</div><br />';
 
-						csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+_.chain(visit.lat).compact().first().value()+'|'+_.chain(visit.lon).compact().first().value()+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(visit.start_universal[0], _.last(visit.end_universal))+'|'+visit.attendance+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
+						csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+_.chain(visit.lat).compact().first().value()+'|'+_.chain(visit.lon).compact().first().value()+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(visit.start_universal[0], _.last(visit.end_universal))+'|'+arrayToString(visit.attendance)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
 					}
 				});
 
@@ -408,6 +410,15 @@
 				    .value()
 			}
 
+			function arrayToString(array) {
+				var str = '';
+				_.each(array, function(v) {
+					str += v + ', ';
+				});
+
+				return str.slice(0, str.length-2);
+			}
+
 			function getWorkerName(json, id) {
 				var worker = _.findWhere(json, {_id: id});
 				return worker.first_name + ' ' + worker.last_name;
@@ -447,7 +458,7 @@
 
 				var attUnderFive = [];
 				_.each(attClients, function(c) {
-					if (getAge(visit.start_time, c.date_of_birth) <= 5) {
+					if (getAge(visit.start_universal[0], c.date_of_birth) <= 5) {
 						attUnderFive.push(c);
 					}
 				});
