@@ -170,13 +170,6 @@
 				    );
 				});
 
-				$("#dataHolder").html('');
-				var el = '<div>';
-				var htmlChunk = '';
-
-				var csvStr = 'Visit ID|Worker name|Worker ID|Household name|Household ID|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending|Services delivered|Health topics completed';
-
-
 				// first, clean up the dates so that they'll be comparable for the next each pass
 				_.each(visitsJSON, function(visit) {
 					var sDate, sTime;
@@ -246,6 +239,8 @@
 						'_id': idArray,
 						'worker_id': visit.worker_id,
 						'hh_id': visit.hh_id,
+						'start_universal': visit.start_time,
+						'end_universal': visit.end_time,
 						'start_date': visit.parsed_start_date,
 						'start_time': startTimeArray,
 						'end_date': visit.parsed_end_date,
@@ -308,6 +303,12 @@
 					- dups have been removed from attendance, cha_accessed, health_selects_recorded, health_topics_accessed
 				*/
 
+				$("#dataHolder").html('');
+				var el = '<div>';
+				var htmlChunk = '';
+
+				var csvStr = 'Visit ID|Worker name|Worker ID|Household name|Household ID|Lat|Lon|Start date|Start time|End date|End time|Visit duration|Clients attending ID|Clients attending|Number of clients attending|Number of children under 5 attending|Services delivered|Health topics completed';
+
 				_.each(combinedAndCleanedVisits, function(visit) {
 					// put conditions here that determine if the visit is not relevant
 					if (visit.hh_id !== 9910 && visit.worker_id !== 9901 && visit.attendance.length > 0) {
@@ -328,7 +329,7 @@
 
 						// order obviously matters here, don't mess with it
 						var completeStatus = '';
-						if (calcVisitLength(fakeST, fakeET) !== "Incomplete or deleted") {
+						if (calcVisitLength(visit.start_universal, visit.end_universal) !== "Incomplete or deleted") {
 							htmlChunk += '<div class="visit complete">';
 							completeStatus = "Complete";
 						} else if (checkSemiCompleteStatus(visit, servicesAccessedJSON, servicesJSON) === "Semi-complete") {
@@ -345,24 +346,25 @@
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
 						//htmlChunk += '<div class="hideable"><span class="report-row-header">Completion status: </span><span class="complete-status">' + completeStatus + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Lat: </span><span class="lat">' + _.chain(visit.lat).compact().first().value() + '</span></div>';					// compact removes all falsey values, including 0
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Lon: </span><span class="lon">' + _.chain(visit.lon).compact().first().value() + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Start date: </span><span class="start-date">' + visit.start_date + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + fakeST + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + visit.end_date + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + fakeET + '</span></div>';
-						htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(fakeST, fakeET) + '</span></div>';
-						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending: </span><span class="attendance">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_universal, visit.end_universal) + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending IDs: </span><span class="attendance-id">' + visit.attendance + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending names: </span><span class="attendance-name">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
 						htmlChunk += '<div class="hideable"><span class="report-row-header">Services delivered: </span><span class="services">' + getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id) + '</span></div>';
-						htmlChunk += '<div class="hideable"><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
+						htmlChunk += '<div class="hideable"><span class="report-row-header">Health topics completed: </span><span class="health-topics-completed-name">' + getHealthTopicsCompleted(visit.health_topics_accessed) + '</span></div>';
 						// htmlChunk += '<div class="hideable"><span class="report-row-header">Child health assessment: </span><span class="cha">' + getCHACompleteStatus(visit) + '</span></div>'
 						// htmlChunk += '<div class="hideable"><span class="report-row-header">Immunization: </span><span class="immunization">' + getImmunizationCompleteStatus(visit) + '</span></div>'
 
 						htmlChunk += '</div><br />';
 
-						csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(fakeST, fakeET)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
-					} else {
-						console.log(visit);
+						csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+_.chain(visit.lat).compact().first().value()+'|'+_.chain(visit.lon).compact().first().value()+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(visit.start_universal, visit.end_universal)+'|'+visit.attendance+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
 					}
 				});
 
@@ -562,7 +564,7 @@
 			    s -= h*3600;
 			    var m = Math.floor(s/60); //Get remaining minutes
 			    s -= m*60;
-			    return (h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s)).substr(0,8); //zero padding on minutes and second, then cutting the trailing digits - probably a way nicer way to do this with floor
+			    return (h+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s)).substr(0,7); //zero padding on minutes and second, then cutting the trailing digits - probably a way nicer way to do this with floor
 			}
 
 			function getAge(visitDate, dob) {
