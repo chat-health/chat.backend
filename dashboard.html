@@ -7,8 +7,10 @@
 		<!-- CONFIRM THIS IS A STABLE LINK -->
 
 		<script>
+			// SWITCH ME FOR PROD
 			var HOSTNAME = 'https://backend.lmbutler-ssa.net';
 			//var HOSTNAME = 'http://localhost:8000';
+			// END SWITCH
 
 			var clientToken="";
 
@@ -144,7 +146,7 @@
 						pullData('services_accessed')
 				).done(function(visitsJSON, workersJSON, householdsJSON, clientsJSON, servicesJSON, servicesAccessedJSON){
 					jQuery('#loading-text').hide();
-					populateHTML(cleanVisits(visitsJSON[0]), workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
+					populateHTML(visitsJSON[0], workersJSON[0], householdsJSON[0], clientsJSON[0], servicesJSON[0], servicesAccessedJSON[0]);
 				});
 			};
 
@@ -172,8 +174,10 @@
 				var el = '<div>';
 				var htmlChunk = '';
 
-				var csvStr = 'Visit ID|Worker name|Worker ID|Household name|Household ID|Completion status|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending|Services delivered|Health topics completed';
+				var csvStr = 'Visit ID|Worker name|Worker ID|Household name|Household ID|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending|Services delivered|Health topics completed';
 
+
+				// first, clean up the dates so that they'll be comparable for the next each pass
 				_.each(visitsJSON, function(visit) {
 					var sDate, sTime;
 					if (visit.start_time != null) {
@@ -197,10 +201,132 @@
 						eTime = 'Unknown or null';
 					}
 
+					visit.parsed_start_date = sDate;
+					visit.parsed_start_time = sTime;
+					visit.parsed_end_date = eDate;
+					visit.parsed_end_time = eTime;
+				});
+
+				// now check for friends (same worker_id, hh_id, start_date)
+				var combinedVisits = [];
+				_.each(visitsJSON, function(visit) {
+					var friends = _.where(visitsJSON, { worker_id: visit.worker_id, hh_id: visit.hh_id, parsed_start_date: visit.parsed_start_date });
+					// *** NB: all visits are Home Visits by Home Care Volunteers (but will this always be true) ***
+					var cVisitId = '';
+					var idArray = [], startTimeArray = [], endTimeArray = [], latArray = [], lonArray = [], attendanceArray = [], chaAccessedArray = [], hsrArray = [], htaArray = [], vaArray = [];
+					// look into _.unzip - does exactly what we need here
+					_.each(friends, function(f) {
+						cVisitId += f._id;
+						idArray.push(f._id);
+						startTimeArray.push(f.parsed_start_time);
+						endTimeArray.push(f.parsed_end_time);
+						latArray.push(f.lat);
+						lonArray.push(f.lon);
+						_.each(f.attendance, function(att) {
+							attendanceArray.push(att);
+						});
+						_.each(f.cha_accessed, function(chaA) {
+							chaAccessedArray.push(chaA);
+						});
+						_.each(f.health_selects_recorded, function(hsr) {
+							hsrArray.push(hsr);
+						});
+						_.each(f.health_topics_accessed, function(hta) {
+							htaArray.push(hta);
+						});
+						_.each(f.videos_accessed, function(va) {
+							vaArray.push(va);
+						});
+						// duplicates will be cleaned out with _.uniq from the arrays (NOTE: THIS IS A BIG UPSIDE TO USING ARRAYS INSTEAD OF STRINGS HERE!)
+					});
+
+					// create the new visit objects, which is a combination of one or more visit objects
+					var combinedVisit = {
+						'c_visit_id': cVisitId,
+						'_id': idArray,
+						'worker_id': visit.worker_id,
+						'hh_id': visit.hh_id,
+						'start_date': visit.parsed_start_date,
+						'start_time': startTimeArray,
+						'end_date': visit.parsed_end_date,
+						'end_time': endTimeArray,
+						'role': "Home Care Volunteer",
+						'type': "Home Visit",
+						'lat': latArray,
+						'lon': lonArray,
+						'attendance': _.uniq(attendanceArray),
+						'cha_accessed': fauxUniqueify(chaAccessedArray, ["client_id", "type"]),
+						'health_selects_recorded': fauxUniqueify(hsrArray, ["client_id", "select_id"]),
+						'health_topics_accessed': fauxUniqueify(htaArray, ["topic_id", "topic_name"]),					// NB: don't actually need both, but fauxUniqueify is only implemented for 2 keys right now
+						'videos_accessed': vaArray
+					};
+					combinedVisits.push(combinedVisit);
+				});
+
+				// remove duplicates
+				var combinedAndCleanedVisits = _.uniq(combinedVisits, function(visit) { return visit.c_visit_id; });
+
+				/*
+					TO FIX:
+					- visit times are busto, start here
+					- all comma separated values need to be separated out into multiple columns?
+					- do something with immunization and cha
+					- clients attending, clients attending under 5, numbers of each
+					- figure out services delivered, this is a very big mess
+				*/
+
+
+				/* some checkers:
+					_.each(combinedAndCleanedVisits, function(visit) { if (visit.lat.length > 1 && visit.lat[0] != 0) { console.log(visit.c_visit_id + ' has multiple lats: ' + visit.lat) } })
+					_.each(combinedAndCleanedVisits, function(visit) { if (visit.start_time.length > 1) { console.log(visit.c_visit_id + ' has multiple start times: ' + visit.start_time) } })
+					_.each(combinedAndCleanedVisits, function(visit) { if (visit.end_time.length > 1) { console.log(visit.c_visit_id + ' has multiple end times: ' + visit.end_time) } })
+
+					var realVisit = 0;
+					var fakeVisit = 0;
+					_.each(combinedAndCleanedVisits, function(visit) {
+						if (visit.attendance.length == 0) {
+							console.log(visit.c_visit_id + ' has nobody attending')
+							fakeVisit++;
+						} else {
+							realVisit++;
+						}
+					});
+					console.log('There were 267 visit entries')
+					console.log('There are 157 cleaned and combined visits')
+					console.log('Of these, there are ' + realVisit + ' visits with actual people attending (eg real visits)')
+					console.log('And there are ' + fakeVisit + ' visits with nobody attending (aka fake visits)')
+				*/
+
+
+				/* ASSUMPTIONS WE NOW HAVE IN PLACE:
+					- each visit is now composed of all visits on that day. So, we have arrays of visit_id, lat, lon, start_time, end_time where none existed before
+					- the visit's id is a concat of all of the visit ids
+					- the visit's lat/lon are the first non-zero value of any recorded values, if a non-zero value exists
+					- the visit's start time is the first start time
+					- the visit's end time is the last end time
+					- everything else is comma separated as usual
+					- dups have been removed from attendance, cha_accessed, health_selects_recorded, health_topics_accessed
+				*/
+
+				_.each(combinedAndCleanedVisits, function(visit) {
+					var fakeST;
+					var fakeET;
+
+					if (visit.start_time[0]) {
+						fakeST = visit.start_time[0]
+					} else {
+						fakeST = 'Unknown or null';
+					}
+
+					if (visit.end_time) {
+						fakeET = _.last(visit.end_time)
+					} else {
+						fakeET = 'Unknown or null';
+					}
 
 					// order obviously matters here, don't mess with it
 					var completeStatus = '';
-					if (calcVisitLength(visit.start_time, visit.end_time) !== "Incomplete or deleted") {
+					if (calcVisitLength(fakeST, fakeET) !== "Incomplete or deleted") {
 						htmlChunk += '<div class="visit complete">';
 						completeStatus = "Complete";
 					} else if (checkSemiCompleteStatus(visit, servicesAccessedJSON, servicesJSON) === "Semi-complete") {
@@ -211,17 +337,17 @@
 						completeStatus = "Incomplete or deleted";
 					}
 
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit ID: </span><span class="visit_id">' + visit._id + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit ID: </span><span class="visit_id">' + visit.c_visit_id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker name: </span><span class="worker_name">' + getWorkerName(workersJSON, visit.worker_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Worker ID: </span><span class="worker-id">' + visit.worker_id + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household name: </span><span class="hh-name">' + getHouseholdName(householdsJSON, visit.hh_id) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Household ID: </span><span class="hh-id">' + visit.hh_id + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Completion status: </span><span class="complete-status">' + completeStatus + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Start date: </span><span class="start-date">' + sDate + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + sTime + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + eDate + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + eTime + '</span></div>';
-					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(visit.start_time, visit.end_time) + '</span></div>';
+					//htmlChunk += '<div class="hideable"><span class="report-row-header">Completion status: </span><span class="complete-status">' + completeStatus + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Start date: </span><span class="start-date">' + visit.start_date + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Start time: </span><span class="start-time">' + fakeST + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">End date: </span><span class="end-date">' + visit.end_date + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">End time: </span><span class="end-time">' + fakeET + '</span></div>';
+					htmlChunk += '<div class="hideable"><span class="report-row-header">Visit duration: </span><span class="duration">' + calcVisitLength(fakeST, fakeET) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Clients attending: </span><span class="attendance">' + getAttendingClients(clientsJSON, visit) + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of clients attending: </span><span class="attendance-number">' + visit.attendance.length + '</span></div>';
 					htmlChunk += '<div class="hideable"><span class="report-row-header">Number of children under 5 attending: </span><span class="attendance-under-five">' + getNumberAttendingUnderFive(clientsJSON, visit) + '</span></div>';
@@ -232,42 +358,17 @@
 
 					htmlChunk += '</div><br />';
 
-					csvStr += '\n'+visit._id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+completeStatus+'|'+sDate+'|'+sTime+'|'+eDate+'|'+eTime+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
+					csvStr += '\n'+visit.c_visit_id+'|'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+visit.start_date+'|'+fakeST+'|'+visit.end_date+'|'+fakeET+'|'+calcVisitLength(fakeST, fakeET)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed);
 				});
-
-
-
-
-
-				/*
-					TO FIX:
-					- visits need to be combined into one visit if on same date
-					- all comma separated values need to be separated out into multiple columns
-					- check times, maybe fix (times are UTC)
-					- check dates, update month (FIXED)
-					- do something with immunization and cha
-					- clients attending, clients attending under 5, numbers of each
-					- figure out services delivered, this is a very big mess
-				*/
-
-				// var csvStr = 'Worker name|Worker ID|Household name|Household ID|Start date|Start time|End date|End time|Visit duration|Clients attending|Number of clients attending|Number of children under 5 attending| Services delivered| Health topics completed|Child health assessment|Immunization';
-
-				// csvStr += '\n'+getWorkerName(workersJSON, visit.worker_id) +'|'+visit.worker_id+'|'+getHouseholdName(householdsJSON, visit.hh_id) +'|'+visit.hh_id+'|'+sDate+'|'+sTime+'|'+eDate+'|'+eTime+'|'+calcVisitLength(visit.start_time, visit.end_time)+'|'+getAttendingClients(clientsJSON, visit)+'|'+visit.attendance.length+'|'+getNumberAttendingUnderFive(clientsJSON, visit)+'|'+getServicesAccessed(servicesAccessedJSON, servicesJSON, visit._id)+'|'+getHealthTopicsCompleted(visit.health_topics_accessed)+'|'+getCHACompleteStatus(visit)+'|'+getImmunizationCompleteStatus(visit);
-
-
-
-
-
-
 
 				el += htmlChunk;
 				el += '</div>';
 				$('#report-container').html(el);
 
-				// hide all of the incomplete visits so that they are expandable
-				jQuery('.incomplete').addClass('hidden');
+				// hide all of the incomplete visits so that they are expandable - removed for now
+				// jQuery('.incomplete').addClass('hidden');
 				jQuery('.incomplete').append('<div class="expanding-div">+</div>');
-				jQuery('.incomplete .hideable').hide();
+				// jQuery('.incomplete .hideable').hide();
 
 				jQuery('.incomplete').click(function() {
 					if (jQuery(this).hasClass('hidden')) {
@@ -287,10 +388,15 @@
 				});
 			}
 
-
-			// this function will concatenate all visits on the same day (same worker, HH, jesus this is hard)
-			function cleanVisits(visitsJSON) {
-				return visitsJSON;
+			// talk to Armin / Matt about expanding this for 1 or 3+ keys
+			function fauxUniqueify(array, keys) {
+				// traverse the array and return a new array of equal or lesser size that contains 'duplicates' removed
+				// where duplicate is defined as the value of the keys of the objects being equal
+				// and only the first object is taken (all others are 'deleted')
+				return _.chain(array)
+					.groupBy(function (i) { return i[keys[0]] + "-" + i[keys[1]]; })
+				    .reduce(function(r, os, k) { r.push(_.first(os)); return r }, [])
+				    .value()
 			}
 
 			function getWorkerName(json, id) {
